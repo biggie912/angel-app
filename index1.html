@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0F0F1A">
+  <title>Angel's Daily Tracker</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;overscroll-behavior:none}
+    body{background:#0F0F1A;color:#F0F0F0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',sans-serif;min-height:100vh}
+    #app{max-width:480px;margin:0 auto;min-height:100vh}
+    ::-webkit-scrollbar{width:2px}
+    ::-webkit-scrollbar-thumb{background:#ffffff15;border-radius:1px}
+    input[type=number]::-webkit-inner-spin-button{opacity:.4}
+
+    /* Layout */
+    .content{padding-bottom:80px}
+    .pad{padding:6px 16px}
+    .card{background:#1A1A2E;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 16px rgba(0,0,0,.3)}
+
+    /* Nav */
+    .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(15,15,26,.96);border-top:1px solid rgba(255,255,255,.05);backdrop-filter:blur(12px);display:flex;z-index:300;padding-bottom:env(safe-area-inset-bottom,6px)}
+    .nb{flex:1;padding:10px 2px 4px;border:none;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;-webkit-tap-highlight-color:transparent}
+    .nb .ni{font-size:19px}
+    .nb .nl{font-size:9px;font-weight:600;letter-spacing:.5px;color:#6B7280}
+    .nb.on .nl{color:#F59E0B}
+    .ndot{width:18px;height:2px;border-radius:1px;background:#F59E0B;margin-top:1px}
+
+    /* Date nav */
+    .dn{display:flex;align-items:center;gap:8px;padding:14px 20px 6px}
+    .dbt{width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:transparent;color:#9CA3AF;cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+    .dbt.dim{color:#222240;pointer-events:none}
+
+    /* Section header */
+    .sh{font-size:9px;font-weight:700;color:#6B7280;letter-spacing:1.4px;margin-bottom:8px;padding-left:2px;padding-top:4px}
+
+    /* Habit row */
+    .hr{display:flex;align-items:center;gap:14px;padding:12px 10px;border-radius:10px;cursor:pointer;margin-bottom:2px;-webkit-tap-highlight-color:transparent}
+    .hr:active{background:rgba(255,255,255,.03)}
+
+    /* Sleep btn */
+    .sb{padding:9px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600;font-size:13px;background:#222240;color:#9CA3AF;font-family:inherit;-webkit-tap-highlight-color:transparent}
+    .sb.on{background:#F59E0B;color:#000}
+
+    /* Step btn */
+    .stb{width:38px;height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:#222240;color:#F0F0F0;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;flex-shrink:0}
+
+    /* Progress */
+    .pt{height:7px;border-radius:3.5px;background:rgba(255,255,255,.07);overflow:hidden}
+    .pf{height:100%;border-radius:3.5px;background:#F59E0B;transition:width .4s}
+
+    /* Inputs */
+    .inp{width:100%;padding:11px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.07);background:#222240;color:#F0F0F0;font-size:13px;font-family:inherit}
+    .inp:focus{outline:none;border-color:rgba(245,158,11,.4)}
+    select.inp option{background:#1A1A2E}
+    textarea.inp{resize:none;line-height:1.65;color:#9CA3AF}
+
+    /* Buttons */
+    .bgold{background:#F59E0B;color:#000;border:none;border-radius:12px;padding:14px;font-weight:700;font-size:14px;cursor:pointer;width:100%;font-family:inherit;-webkit-tap-highlight-color:transparent}
+    .boutl{background:transparent;color:#F59E0B;border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:10px 18px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
+    .pill{display:inline-flex;align-items:center;padding:7px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.07);background:transparent;color:#9CA3AF;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
+    .pill.on{background:#F59E0B;color:#000;border-color:#F59E0B}
+    .catb{background:#1A1A2E;border-radius:14px;padding:14px 8px;text-align:center;cursor:pointer;border:1.5px solid transparent;-webkit-tap-highlight-color:transparent}
+    .catb.on{background:#222240;border-color:rgba(245,158,11,.35)}
+    .xcbtn{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.1);font-size:15px;padding:3px 5px;-webkit-tap-highlight-color:transparent}
+
+    /* Task */
+    .ti{display:flex;align-items:flex-start;gap:10px;padding:13px 14px;background:#1A1A2E;border-radius:12px;margin-bottom:6px}
+    .badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;margin-top:5px}
+    .divl{height:1px;background:rgba(255,255,255,.04);flex:1}
+
+    /* Food entry */
+    .fe{display:flex;align-items:center;gap:10px;padding:11px 12px}
+
+    button:active{opacity:.72;transform:scale(.95)}
+    [onclick]:active{opacity:.8}
+  </style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────
+const FOODS=[
+  {id:'rice',         name:'Rice',          unit:'cup (cooked)', cal:206,p:4, c:45,f:0 },
+  {id:'yam',          name:'Yam',           unit:'medium slice', cal:118,p:2, c:28,f:0 },
+  {id:'egusi',        name:'Egusi soup',    unit:'cup',          cal:335,p:15,c:10,f:28},
+  {id:'beans',        name:'Beans',         unit:'cup (cooked)', cal:227,p:15,c:41,f:1 },
+  {id:'okpa',         name:'Okpa',          unit:'piece (150g)', cal:250,p:12,c:35,f:7 },
+  {id:'palmoil',      name:'Palm oil',      unit:'tbsp',         cal:120,p:0, c:0, f:14},
+  {id:'spaghetti',    name:'Spaghetti',     unit:'cup (cooked)', cal:220,p:8, c:43,f:1 },
+  {id:'groundnutoil', name:'Groundnut oil', unit:'tbsp',         cal:119,p:0, c:0, f:14},
+  {id:'indomie',      name:'Indomie',       unit:'pack',         cal:330,p:7, c:48,f:13},
+  {id:'eggs',         name:'Eggs',          unit:'egg',          cal:78, p:6, c:1, f:5 },
+  {id:'milk',         name:'Milk',          unit:'cup',          cal:149,p:8, c:12,f:8 },
+  {id:'groundnuts',   name:'Groundnuts',    unit:'\u00bc cup',   cal:207,p:9, c:6, f:18},
+  {id:'sardines',     name:'Sardines',      unit:'can',          cal:191,p:23,c:0, f:11},
+  {id:'cornflakes',   name:'Cornflakes',    unit:'cup',          cal:101,p:2, c:24,f:0 },
+  {id:'garri',        name:'Garri',         unit:'cup (dry)',    cal:360,p:1, c:85,f:0 },
+];
+const CAL_GOAL=1600;
+
+const WX={
+  0:{name:'Rest Day',             sub:'Active recovery \uD83C\uDFD0', emoji:'\uD83D\uDE34',color:'#4B5563',exs:[]},
+  1:{name:'Gluteus Maximus',      sub:'Lower body \u2014 glutes',     emoji:'\uD83C\uDF51',color:'#F59E0B',
+     exs:['Hip Thrusts','Sumo Squats','Romanian Deadlift','Donkey Kicks','Glute Bridges','Kickbacks','Step-ups']},
+  2:{name:'Jumping Drills + Abs', sub:'Cardio & core',               emoji:'\u26A1',      color:'#8B5CF6',
+     exs:['Jump Squats','High Knees','Box Jumps','Burpees','Plank 60s','Crunches','Russian Twists','Leg Raises']},
+  3:{name:'Jumping Drills + Abs', sub:'Cardio & core',               emoji:'\u26A1',      color:'#8B5CF6',
+     exs:['Jump Squats','High Knees','Box Jumps','Burpees','Plank 60s','Crunches','Russian Twists','Leg Raises']},
+  4:{name:'Gluteus Medius',       sub:'Hip & side glutes',           emoji:'\uD83D\uDD25',color:'#22C55E',
+     exs:['Side Hip Abduction','Clamshells','Lateral Band Walks','Single Leg Bridge','Curtsy Lunges','Fire Hydrants','Side Plank Dips']},
+  5:{name:'Jumping Drills + Abs', sub:'Cardio & core',               emoji:'\u26A1',      color:'#8B5CF6',
+     exs:['Jump Squats','High Knees','Box Jumps','Burpees','Plank 60s','Crunches','Russian Twists','Leg Raises']},
+  6:{name:'Gluteus Minimus',      sub:'Hip abductors & outer',       emoji:'\u2728',      color:'#EC4899',
+     exs:['Standing Hip Abduction','Side Leg Raises','Sumo Squats','Plie Squats','Cossack Squats','Inner Thigh Squeeze','Fire Hydrants']},
+};
+
+const SPIRIT=[
+  {id:'pray_am',label:'Morning Prayer',emoji:'\uD83C\uDF05'},
+  {id:'fasting', label:'Fasting',       emoji:'\u2728'},
+  {id:'bible',   label:'Read Bible',    emoji:'\uD83D\uDCD6'},
+  {id:'jogging', label:'Jogging',       emoji:'\uD83C\uDFC3\u200D\u2640\uFE0F'},
+  {id:'water',   label:'Drink Water',   emoji:'\uD83D\uDCA7'},
+  {id:'pray_pm', label:'Night Prayer',  emoji:'\uD83C\uDF19'},
+];
+const HYGIENE=[
+  {id:'brush_am',   label:'Brush Teeth (AM)',emoji:'\uD83E\uDEA5'},
+  {id:'shower',     label:'Shower',          emoji:'\uD83D\uDEBF'},
+  {id:'skincare_am',label:'Skincare (AM)',   emoji:'\uD83C\uDF3F'},
+  {id:'loc_care',   label:'Loc Care',        emoji:'\uD83E\uDD81'},
+  {id:'brush_pm',   label:'Brush Teeth (PM)',emoji:'\uD83C\uDF19'},
+  {id:'skincare_pm',label:'Skincare (PM)',   emoji:'\uD83D\uDC86\u200D\u2640\uFE0F'},
+];
+const ALL_H=[...SPIRIT,...HYGIENE];
+
+const SCH_T=[
+  'Take IELTS exam',
+  'Request 10 sealed transcripts from Caritas registry',
+  'Send referee request emails (\u00d73)',
+  'Complete DAAD motivation letter',
+  'Write Chevening leadership & networking essays',
+  'Update Europass CV with CNC FYP',
+  'Research TU Dortmund MSc Automation requirements',
+  'Gather all DAAD application documents',
+  'Submit DAAD online portal application',
+  'Write Eiffel Excellence personal statement',
+  'Research MEXT scholarship process',
+  'Prepare NYSC deferment letter',
+  'Research RWTH Aachen MSc Robotics program',
+  'Research Erasmus Mundus JEMARO / IFRoS',
+  'Update scholarship tracker',
+];
+const CNC_T=[
+  'Complete CNC plotter frame assembly',
+  'Test NEMA 17 stepper motors individually',
+  'Configure GRBL firmware on Arduino Uno',
+  'Wire A4988 stepper drivers correctly',
+  'Test CNC Shield V3 connections',
+  'Write Python G-code generation script',
+  'Design test PCB trace in KiCad',
+  'Calibrate X and Y axis movement',
+  'Test pen-up / pen-down servo mechanism',
+  'Run first PCB trace test plot',
+  'Fix mechanical / backlash issues',
+  'Document machine specs and schematics',
+  'Finalize 25-page final year project report',
+  'Prepare project defense presentation',
+  'Film demo video of plotter in action',
+];
+
+// ─── STATE ─────────────────────────────────────────────────────────
+function todayD(){const d=new Date();d.setHours(0,0,0,0);return d;}
+const S={
+  tab:'home', selDate:todayD(),
+  dayDB:{}, foodDB:{}, tasks:[],
+  selFood:'rice', foodQty:1,
+  cstName:'', cstCal:'',
+  newTask:'', newTaskCat:'Scholarship',
+  tCat:'All', tStatus:'All',
+};
+
+// ─── HELPERS ───────────────────────────────────────────────────────
+function dk(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function labelDate(d){
+  const t=todayD(),yt=new Date(t);yt.setDate(t.getDate()-1);
+  const k=dk(d);
+  if(k===dk(t))return'Today';
+  if(k===dk(yt))return'Yesterday';
+  return d.toLocaleDateString('en-NG',{weekday:'short',month:'short',day:'numeric'});
+}
+function fullDate(d){return d.toLocaleDateString('en-NG',{weekday:'long',month:'long',day:'numeric',year:'numeric'});}
+function emptyDay(){return{habits:{},hygiene:{},sleep:null,readMins:0,notes:'',wxChecks:{}};}
+function getDay(d){return S.dayDB[dk(d)]||emptyDay();}
+function getFood(d){return S.foodDB[dk(d)]||{entries:[]};}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function weekData(){
+  const t=todayD();
+  return Array.from({length:7},(_,i)=>{
+    const d=new Date(t);d.setDate(t.getDate()-6+i);
+    const dd=getDay(d);
+    const done=ALL_H.filter(h=>(dd.habits[h.id]||dd.hygiene[h.id])).length;
+    return{date:d,pct:ALL_H.length?Math.round((done/ALL_H.length)*100):0,lbl:d.toLocaleDateString('en-NG',{weekday:'short'}).charAt(0)};
+  });
+}
+
+// ─── PERSIST ───────────────────────────────────────────────────────
+function save(){
+  try{
+    localStorage.setItem('ang6_day', JSON.stringify(S.dayDB));
+    localStorage.setItem('ang6_food',JSON.stringify(S.foodDB));
+    localStorage.setItem('ang6_task',JSON.stringify(S.tasks));
+  }catch(e){}
+}
+function load(){
+  try{
+    const d=localStorage.getItem('ang6_day');
+    const f=localStorage.getItem('ang6_food');
+    const t=localStorage.getItem('ang6_task');
+    if(d)S.dayDB =JSON.parse(d);
+    if(f)S.foodDB=JSON.parse(f);
+    if(t){S.tasks=JSON.parse(t);}
+    else{
+      S.tasks=[
+        ...SCH_T.map((title,i)=>({id:'s'+i,title,category:'Scholarship',done:false})),
+        ...CNC_T.map((title,i)=>({id:'c'+i,title,category:'CNC Machine', done:false})),
+      ];
+      save();
+    }
+  }catch(e){S.tasks=[];}
+}
+
+// ─── ACTIONS ───────────────────────────────────────────────────────
+function setTab(t){S.tab=t;render();}
+function prevDay(){const d=new Date(S.selDate);d.setDate(d.getDate()-1);S.selDate=d;render();}
+function nextDay(){const d=new Date(S.selDate);d.setDate(d.getDate()+1);if(dk(d)<=dk(todayD())){S.selDate=d;render();}}
+
+function setF(field,val,date){
+  const key=date?dk(date):dk(S.selDate);
+  if(!S.dayDB[key])S.dayDB[key]=emptyDay();
+  S.dayDB[key][field]=val;
+  save();render();
+}
+function togH(id){
+  const k=dk(S.selDate);if(!S.dayDB[k])S.dayDB[k]=emptyDay();
+  S.dayDB[k].habits[id]=!S.dayDB[k].habits[id];save();render();
+}
+function togHy(id){
+  const k=dk(S.selDate);if(!S.dayDB[k])S.dayDB[k]=emptyDay();
+  S.dayDB[k].hygiene[id]=!S.dayDB[k].hygiene[id];save();render();
+}
+function togWx(ex){
+  const k=dk(S.selDate);if(!S.dayDB[k])S.dayDB[k]=emptyDay();
+  if(!S.dayDB[k].wxChecks)S.dayDB[k].wxChecks={};
+  S.dayDB[k].wxChecks[ex]=!S.dayDB[k].wxChecks[ex];save();render();
+}
+function setSleep(h){const dd=getDay(S.selDate);setF('sleep',dd.sleep===h?null:h);}
+function adjRead(d){const dd=getDay(S.selDate);setF('readMins',Math.max(0,(dd.readMins||0)+d));}
+
+function setSelFood(v){S.selFood=v;render();}
+function adjQty(d){S.foodQty=Math.max(0.5,parseFloat((S.foodQty+d).toFixed(1)));render();}
+function addFood(){
+  const f=FOODS.find(x=>x.id===S.selFood)||FOODS[0];
+  const k=dk(S.selDate);if(!S.foodDB[k])S.foodDB[k]={entries:[]};
+  S.foodDB[k].entries.push({id:Date.now(),name:f.name,unit:f.unit,qty:S.foodQty,
+    cal:Math.round(f.cal*S.foodQty),p:Math.round(f.p*S.foodQty),
+    c:Math.round(f.c*S.foodQty),f:Math.round(f.f*S.foodQty)});
+  S.foodQty=1;save();render();
+}
+function addCst(){
+  if(!S.cstName.trim()||!S.cstCal)return;
+  const k=dk(S.selDate);if(!S.foodDB[k])S.foodDB[k]={entries:[]};
+  S.foodDB[k].entries.push({id:Date.now(),name:S.cstName.trim(),unit:'custom',qty:1,cal:parseFloat(S.cstCal)||0,p:0,c:0,f:0});
+  S.cstName='';S.cstCal='';save();render();
+}
+function delFood(id){
+  const k=dk(S.selDate);if(S.foodDB[k])S.foodDB[k].entries=S.foodDB[k].entries.filter(e=>e.id!==id);
+  save();render();
+}
+
+function togTask(id){S.tasks=S.tasks.map(t=>t.id===id?{...t,done:!t.done}:t);save();render();}
+function delTask(id){S.tasks=S.tasks.filter(t=>t.id!==id);save();render();}
+function addTask(){
+  const title=S.newTask.trim();if(!title)return;
+  S.tasks.push({id:'u'+Date.now(),title,category:S.newTaskCat,done:false});
+  S.newTask='';save();render();
+}
+function setTCat(c){S.tCat=c;render();}
+function setTSt(s){S.tStatus=s;render();}
+function setNTC(c){S.newTaskCat=c;render();}
+
+// live-field updates (no re-render)
+function updNotes(v,tod){
+  const key=tod?dk(todayD()):dk(S.selDate);
+  if(!S.dayDB[key])S.dayDB[key]=emptyDay();
+  S.dayDB[key].notes=v;save();
+}
+function updCN(v){S.cstName=v;}
+function updCC(v){S.cstCal=v;}
+function updNT(v){S.newTask=v;}
+
+// ─── RENDER ────────────────────────────────────────────────────────
+function render(){
+  const fa=document.activeElement,fid=fa?fa.id:null,ss=fa?fa.selectionStart:null,se=fa?fa.selectionEnd:null;
+  const sc=(document.querySelector('.content')||{}).scrollTop||0;
+  document.getElementById('app').innerHTML=buildApp();
+  if(fid){const el=document.getElementById(fid);if(el){el.focus();try{el.setSelectionRange(ss,se);}catch(e){}}}
+  const cc=document.querySelector('.content');if(cc)cc.scrollTop=sc;
+}
+
+function buildApp(){
+  return`<div class="content">${
+    S.tab==='home'?bHome():S.tab==='day'?bDay():S.tab==='fitness'?bFit():S.tab==='food'?bFood():bTasks()
+  }</div>${bNav()}`;
+}
+
+// ─── NAV ───────────────────────────────────────────────────────────
+function bNav(){
+  return`<nav class="nav">${
+    [['home','🏠','Home'],['day','📅','Day'],['fitness','💪','Fitness'],['food','🍽️','Food'],['tasks','✅','Tasks']]
+    .map(([id,ic,lb])=>`<button class="nb${S.tab===id?' on':''}" onclick="setTab('${id}')"><span class="ni">${ic}</span><span class="nl">${lb}</span>${S.tab===id?'<div class="ndot"></div>':'<div style="height:3px"></div>'}</button>`)
+    .join('')
+  }</nav>`;
+}
+
+// ─── DATE NAV ──────────────────────────────────────────────────────
+function bDN(){
+  const isT=dk(S.selDate)===dk(todayD());
+  return`<div class="dn"><button class="dbt" onclick="prevDay()">&#8249;</button><div style="flex:1;text-align:center"><div style="font-weight:700;font-size:15px">${labelDate(S.selDate)}</div><div style="font-size:10px;color:#6B7280;margin-top:1px">${fullDate(S.selDate)}</div></div><button class="dbt${isT?' dim':''}" onclick="nextDay()">&#8250;</button></div>`;
+}
+
+// ─── HOME ──────────────────────────────────────────────────────────
+function bHome(){
+  const t=todayD(),dd=getDay(t);
+  const done=ALL_H.filter(h=>dd.habits[h.id]||dd.hygiene[h.id]).length;
+  const pct=ALL_H.length?Math.round((done/ALL_H.length)*100):0;
+  const R=46,circ=(2*Math.PI*R),off=(circ*(1-pct/100));
+  const wx=WX[t.getDay()],wk=weekData();
+  const sp=S.tasks.filter(x=>x.category==='Scholarship'&&!x.done).length;
+  const cp=S.tasks.filter(x=>x.category==='CNC Machine'&&!x.done).length;
+  const notes=dd.notes||'';
+
+  return`<div style="padding:18px 16px 0">
+    <div style="margin-bottom:14px">
+      <div style="font-weight:800;font-size:23px">Angel</div>
+      <div style="font-size:11px;color:#F59E0B99;margin-top:2px">Final Year EEE &middot; Caritas University &middot; 4.26/5.00</div>
+    </div>
+
+    <div class="card" style="display:flex;align-items:center;gap:18px">
+      <svg width="108" height="108" style="flex-shrink:0">
+        <circle cx="54" cy="54" r="${R}" fill="none" stroke="#ffffff0c" stroke-width="11"/>
+        <circle cx="54" cy="54" r="${R}" fill="none" stroke="#F59E0B" stroke-width="11"
+          stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"
+          stroke-linecap="round" transform="rotate(-90 54 54)"/>
+        <text x="54" y="51" text-anchor="middle" fill="#F0F0F0" font-size="20" font-weight="800">${pct}%</text>
+        <text x="54" y="66" text-anchor="middle" fill="#6B7280" font-size="10">Today</text>
+      </svg>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:13px;margin-bottom:10px">Daily Goals</div>
+        ${SPIRIT.map(h=>{const d2=!!dd.habits[h.id];return`
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <div style="width:14px;height:14px;border-radius:4px;flex-shrink:0;background:${d2?'#22C55E':'rgba(255,255,255,.05)'};border:1.5px solid ${d2?'#22C55E':'rgba(255,255,255,.1)'};display:flex;align-items:center;justify-content:center">
+              ${d2?'<span style="color:#000;font-size:8px;font-weight:900">&#10003;</span>':''}
+            </div>
+            <span style="font-size:12px;color:${d2?'#6B7280':'#F0F0F0'}">${h.label}</span>
+          </div>`;}).join('')}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sh">WEEKLY PROGRESS</div>
+      <div style="display:flex;gap:5px;align-items:flex-end;height:60px">
+        ${wk.map(w=>{const iT=dk(w.date)===dk(t);const h=Math.max(4,w.pct*.58);return`
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="width:100%;height:${h}px;border-radius:3px 3px 2px 2px;background:${iT?'#F59E0B':'#22C55E'};opacity:${w.pct===0?.15:1}"></div>
+            <div style="font-size:9px;color:${iT?'#F59E0B':'#6B7280'};font-weight:${iT?700:400}">${w.lbl}</div>
+          </div>`;}).join('')}
+      </div>
+    </div>
+
+    <div class="card" style="display:flex;align-items:center;gap:14px;padding:14px 16px">
+      <div style="width:46px;height:46px;border-radius:13px;background:${wx.color}33;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${wx.emoji}</div>
+      <div>
+        <div style="font-size:11px;color:#6B7280">Today&rsquo;s Workout</div>
+        <div style="font-weight:700;font-size:15px">${wx.name}</div>
+        <div style="font-size:11px;color:#9CA3AF;margin-top:2px">${wx.sub}</div>
+      </div>
+    </div>
+
+    ${sp>0||cp>0?`
+    <div class="card" style="background:#1B1240;border-left:3px solid #8B5CF6;padding:14px 16px">
+      <div style="font-weight:700;font-size:13px;color:#A78BFA;margin-bottom:4px">🎓 ${sp} scholarship task${sp!==1?'s':''} pending</div>
+      <div style="font-size:11px;color:#6B7280">Stay on track for your 2027 MSc application</div>
+      ${cp>0?`<div style="font-size:11px;color:#6B7280;margin-top:3px">⚙️ ${cp} CNC tasks remaining</div>`:''}
+    </div>`:''}
+
+    <div class="card" style="padding:14px 16px;margin-bottom:20px">
+      <div class="sh">TODAY&rsquo;S NOTE</div>
+      <textarea id="home-notes" class="inp" rows="3" oninput="updNotes(this.value,true)" placeholder="Write something for today...">${esc(notes)}</textarea>
+    </div>
+  </div>`;
+}
+
+// ─── DAY ───────────────────────────────────────────────────────────
+function bDay(){
+  const dd=getDay(S.selDate);
+  const hc=HYGIENE.filter(h=>dd.hygiene[h.id]).length;
+  return`<div class="pad">${bDN()}
+    <div class="sh">SPIRITUAL HABITS</div>
+    <div class="card" style="padding:6px 10px;margin-bottom:12px">
+      ${SPIRIT.map(h=>hRow(h,!!dd.habits[h.id],`togH('${h.id}')`)).join('')}
+    </div>
+    <div class="sh">HYGIENE &amp; SELF-CARE (${hc}/${HYGIENE.length})</div>
+    <div class="card" style="padding:6px 10px;margin-bottom:12px">
+      ${HYGIENE.map(h=>hRow(h,!!dd.hygiene[h.id],`togHy('${h.id}')`)).join('')}
+    </div>
+    <div class="sh">SLEEP LAST NIGHT</div>
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${[4,5,6,7,8,9,10].map(h=>`<button class="sb${dd.sleep===h?' on':''}" onclick="setSleep(${h})">${h}h</button>`).join('')}
+      </div>
+      ${dd.sleep?`<div style="margin-top:10px;font-size:12px;color:${dd.sleep>=8?'#22C55E':dd.sleep>=6?'#F59E0B':'#EF4444'}">${dd.sleep>=8?'⭐ Great sleep!':dd.sleep>=6?'😐 Decent sleep':'😴 Try to sleep more tonight'}</div>`:''}
+    </div>
+    <div class="sh">READING / STUDY TIME</div>
+    <div class="card" style="display:flex;align-items:center;gap:16px;margin-bottom:12px">
+      <button class="stb" onclick="adjRead(-15)">&#8722;</button>
+      <div style="flex:1;text-align:center">
+        <div style="font-size:36px;font-weight:800">${dd.readMins||0}</div>
+        <div style="font-size:11px;color:#6B7280">minutes</div>
+      </div>
+      <button class="stb" onclick="adjRead(15)">+</button>
+    </div>
+    <div class="sh">NOTES</div>
+    <div class="card" style="padding:14px 16px;margin-bottom:16px">
+      <textarea id="day-notes" class="inp" rows="4" oninput="updNotes(this.value,false)" placeholder="Write a short note for this day...">${esc(dd.notes||'')}</textarea>
+    </div>
+  </div>`;
+}
+
+// ─── FITNESS ───────────────────────────────────────────────────────
+function bFit(){
+  const dd=getDay(S.selDate),wx=WX[S.selDate.getDay()],wk=weekData();
+  return`<div class="pad">${bDN()}
+    <div class="card" style="padding:18px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:56px;height:56px;border-radius:16px;background:${wx.color}33;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">${wx.emoji}</div>
+        <div>
+          <div style="font-weight:800;font-size:20px">${wx.name}</div>
+          <div style="font-size:12px;color:#9CA3AF;margin-top:2px">${wx.sub}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+      <div style="width:46px;height:46px;border-radius:13px;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:24px">🏐</div>
+      <div style="flex:1"><div style="font-weight:700;font-size:14px">Volleyball</div><div style="font-size:11px;color:#6B7280">Daily &middot; 4:00 PM &ndash; 6:00 PM</div></div>
+      <div onclick="togH('volleyball')" style="width:26px;height:26px;border-radius:8px;border:2px solid ${dd.habits.volleyball?'#F59E0B':'rgba(255,255,255,.12)'};background:${dd.habits.volleyball?'#F59E0B':'transparent'};cursor:pointer;display:flex;align-items:center;justify-content:center">
+        ${dd.habits.volleyball?'<span style="color:#000;font-size:12px;font-weight:900">&#10003;</span>':''}
+      </div>
+    </div>
+
+    ${wx.exs.length?`
+    <div class="sh">TODAY&rsquo;S EXERCISES</div>
+    <div class="card" style="padding:8px;margin-bottom:14px">
+      ${wx.exs.map(ex=>{const done=!!(dd.wxChecks||{})[ex];return`
+        <div onclick="togWx('${esc(ex)}')" style="display:flex;align-items:center;gap:12px;padding:12px 10px;border-radius:10px;cursor:pointer;background:${done?'rgba(255,255,255,.03)':'transparent'};margin-bottom:1px">
+          <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${done?wx.color:'rgba(255,255,255,.12)'};background:${done?wx.color:'transparent'};flex-shrink:0;display:flex;align-items:center;justify-content:center">
+            ${done?`<span style="color:#000;font-size:10px;font-weight:900">&#10003;</span>`:''}
+          </div>
+          <span style="font-size:14px;color:${done?'#6B7280':'#F0F0F0'};text-decoration:${done?'line-through':'none'}">${esc(ex)}</span>
+        </div>`;}).join('')}
+    </div>`:
+    `<div style="text-align:center;padding:40px 20px;color:#6B7280">
+      <div style="font-size:52px;margin-bottom:14px">😴</div>
+      <div style="font-weight:700;font-size:16px;margin-bottom:6px;color:#9CA3AF">Rest &amp; Recovery</div>
+      <div style="font-size:13px">Muscles are rebuilding. Stay hydrated, sleep well, play volleyball!</div>
+    </div>`}
+
+    <div class="sh">LAST 7 DAYS</div>
+    <div class="card" style="padding:8px">
+      ${wk.slice().reverse().map((w,i)=>{const w2=WX[w.date.getDay()];const iT=dk(w.date)===dk(todayD());return`
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:${i<6?'1px solid rgba(255,255,255,.04)':'none'}">
+          <div style="width:8px;height:8px;border-radius:4px;background:${w.pct>0?'#22C55E':'rgba(255,255,255,.1)'};flex-shrink:0"></div>
+          <span style="width:65px;font-size:12px;font-weight:600;color:${iT?'#F59E0B':'#9CA3AF'}">${w.date.getDate()} ${w.date.toLocaleDateString('en-NG',{weekday:'short'})}</span>
+          <span style="flex:1;font-size:12px;color:#6B7280">${w2.name}</span>
+          ${w.pct>0?`<span style="font-size:10px;color:#22C55E;font-weight:600">${w.pct}%</span>`:''}
+        </div>`;}).join('')}
+    </div>
+  </div>`;
+}
+
+// ─── FOOD ──────────────────────────────────────────────────────────
+function bFood(){
+  const fl=getFood(S.selDate),en=fl.entries||[];
+  const tC=en.reduce((s,e)=>s+e.cal,0),tP=en.reduce((s,e)=>s+e.p,0),tCb=en.reduce((s,e)=>s+e.c,0),tF=en.reduce((s,e)=>s+e.f,0);
+  const pct=Math.min((tC/CAL_GOAL)*100,100),over=tC>CAL_GOAL;
+  const fd=FOODS.find(f=>f.id===S.selFood)||FOODS[0];
+  const pCal=Math.round(fd.cal*S.foodQty),pPro=Math.round(fd.p*S.foodQty);
+
+  return`<div class="pad">${bDN()}
+    <div class="card" style="padding:18px;margin-bottom:12px">
+      <div style="display:flex;justify-content:space-around;margin-bottom:14px">
+        ${[[Math.round(tC),'kcal','#F59E0B'],[Math.round(tP)+'g','Protein','#22C55E'],[Math.round(tCb)+'g','Carbs','#60A5FA'],[Math.round(tF)+'g','Fat','#C084FC']]
+          .map(([v,l,c])=>`<div style="text-align:center"><div style="font-size:22px;font-weight:800;color:${c}">${v}</div><div style="font-size:10px;color:#6B7280;margin-top:2px">${l}</div></div>`).join('')}
+      </div>
+      <div class="pt" style="margin-bottom:6px"><div class="pf" style="width:${pct}%;background:${over?'#EF4444':'#F59E0B'}"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:#6B7280">
+        <span>${Math.round(tC)} / ${CAL_GOAL} kcal</span>
+        <span style="color:${over?'#EF4444':'#6B7280'}">${over?'&#9888; '+Math.round(tC-CAL_GOAL)+' over':CAL_GOAL-Math.round(tC)+' remaining'}</span>
+      </div>
+    </div>
+
+    <div class="card" style="padding:16px;margin-bottom:12px">
+      <div class="sh">LOG FOOD</div>
+      <select id="food-sel" class="inp" onchange="setSelFood(this.value)" style="margin-bottom:14px">
+        ${FOODS.map(f=>`<option value="${f.id}"${f.id===S.selFood?' selected':''}>${esc(f.name)} (${f.cal} kcal / ${f.unit})</option>`).join('')}
+      </select>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+        <span style="font-size:13px;color:#9CA3AF;font-weight:600">Qty</span>
+        <button class="stb" onclick="adjQty(-0.5)">&#8722;</button>
+        <span style="font-size:22px;font-weight:800;min-width:28px;text-align:center">${S.foodQty}</span>
+        <button class="stb" onclick="adjQty(0.5)">+</button>
+        <span style="font-size:12px;color:#6B7280">${esc(fd.unit)}</span>
+      </div>
+      <div style="font-size:12px;color:#6B7280;margin-bottom:14px">&approx; ${pCal} kcal &middot; ${pPro}g protein</div>
+      <button class="bgold" onclick="addFood()">+ Add to Log</button>
+    </div>
+
+    <div class="card" style="padding:16px;margin-bottom:12px">
+      <div class="sh">ADD OTHER FOOD</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <input id="cst-n" class="inp" style="flex:2" placeholder="Food name" value="${esc(S.cstName)}" oninput="updCN(this.value)">
+        <input id="cst-c" type="number" class="inp" style="flex:1;text-align:center" placeholder="kcal" value="${esc(S.cstCal)}" oninput="updCC(this.value)">
+      </div>
+      <button class="boutl" onclick="addCst()">+ Add Custom</button>
+    </div>
+
+    <div class="sh">TODAY&rsquo;S FOOD LOG</div>
+    ${en.length===0?`<div style="text-align:center;padding:30px 20px;color:#6B7280;font-size:13px">Nothing logged yet 🥗</div>`:
+    `<div class="card" style="padding:8px;margin-bottom:16px">
+      ${en.map((e,i)=>`
+        <div class="fe" style="border-bottom:${i<en.length-1?'1px solid rgba(255,255,255,.04)':'none'}">
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:600">${esc(e.name)}${e.qty!==1?' &times;'+e.qty:''}</div>
+            <div style="font-size:11px;color:#6B7280">${e.cal} kcal &middot; ${e.p}g protein</div>
+          </div>
+          <button class="xcbtn" onclick="delFood(${e.id})">&#10005;</button>
+        </div>`).join('')}
+    </div>`}
+  </div>`;
+}
+
+// ─── TASKS ─────────────────────────────────────────────────────────
+function bTasks(){
+  const filt=S.tasks.filter(t=>{
+    const cok=S.tCat==='All'||t.category===S.tCat;
+    const sok=S.tStatus==='All'||(S.tStatus==='Pending'?!t.done:t.done);
+    return cok&&sok;
+  });
+  const cm=[
+    {cat:'Scholarship',key:'SCH',em:'🎓',bg:'#2D1B69',txt:'#A78BFA'},
+    {cat:'CNC Machine', key:'CNC',em:'⚙️',bg:'#1B3A2D',txt:'#34D399'},
+    {cat:'General',     key:'GEN',em:'📌',bg:'#2D2417',txt:'#FBBF24'},
+  ];
+
+  return`<div style="padding:12px 16px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
+      ${cm.map(({cat,key,em})=>{
+        const p=S.tasks.filter(t=>t.category===cat&&!t.done).length,act=S.tCat===cat;
+        return`<div class="catb${act?' on':''}" onclick="setTCat('${cat}')">
+          <div style="font-size:20px;margin-bottom:3px">${em}</div>
+          <div style="font-size:24px;font-weight:800;color:${act?'#F59E0B':'#F0F0F0'}">${p}</div>
+          <div style="font-size:9px;color:#6B7280;letter-spacing:.5px;margin-top:2px">${key}</div>
+        </div>`;}).join('')}
+    </div>
+
+    <div class="card" style="padding:14px;margin-bottom:12px">
+      <input id="task-inp" class="inp" placeholder="New task..." value="${esc(S.newTask)}" oninput="updNT(this.value)" onkeydown="if(event.key==='Enter')addTask()">
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:10px">
+        ${['Scholarship','CNC Machine','General'].map(cat=>`
+          <button onclick="setNTC('${cat}')" style="padding:6px 12px;border-radius:20px;border:none;cursor:pointer;font-weight:600;font-size:11px;font-family:inherit;background:${S.newTaskCat===cat?'#F59E0B':'#222240'};color:${S.newTaskCat===cat?'#000':'#9CA3AF'}">
+            ${cat==='CNC Machine'?'&#9881;&#65039; CNC':cat==='Scholarship'?'🎓 Sch':'📌 Gen'}
+          </button>`).join('')}
+        <button onclick="addTask()" style="margin-left:auto;padding:7px 18px;border-radius:20px;border:none;background:#F59E0B;color:#000;font-weight:700;font-size:12px;font-family:inherit;cursor:pointer">+ Add</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:6px;margin-bottom:14px">
+      ${['All','Pending','Done'].map(s=>`<button class="pill${S.tStatus===s?' on':''}" onclick="setTSt('${s}')">${s}</button>`).join('')}
+    </div>
+
+    ${cm.map(({cat,em,bg,txt})=>{
+      const ct=filt.filter(t=>t.category===cat);if(!ct.length)return'';
+      const tot=S.tasks.filter(t=>t.category===cat).length,dn=S.tasks.filter(t=>t.category===cat&&t.done).length;
+      return`<div style="margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+          <span style="font-size:10px;font-weight:700;color:#6B7280;letter-spacing:1px">${em} ${cat.toUpperCase()}</span>
+          <div class="divl"></div>
+          <span style="font-size:10px;color:#6B7280">${dn}/${tot}</span>
+        </div>
+        ${ct.map(task=>`
+          <div class="ti">
+            <div onclick="togTask('${task.id}')" style="width:20px;height:20px;border-radius:6px;border:2px solid ${task.done?txt:'rgba(255,255,255,.12)'};background:${task.done?txt:'transparent'};flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px">
+              ${task.done?'<span style="color:#000;font-size:9px;font-weight:900">&#10003;</span>':''}
+            </div>
+            <div style="flex:1">
+              <div style="font-size:13px;line-height:1.45;color:${task.done?'rgba(255,255,255,.2)':'#F0F0F0'};text-decoration:${task.done?'line-through':'none'}">${esc(task.title)}</div>
+              <span class="badge" style="background:${bg};color:${txt}">${cat}</span>
+            </div>
+            <button class="xcbtn" onclick="delTask('${task.id}')">&#10005;</button>
+          </div>`).join('')}
+      </div>`;}).join('')}
+  </div>`;
+}
+
+// ─── HABIT ROW ─────────────────────────────────────────────────────
+function hRow(h,done,fn){
+  return`<div class="hr" onclick="${fn}">
+    <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${done?'#F59E0B':'rgba(255,255,255,.12)'};background:${done?'#F59E0B':'transparent'};flex-shrink:0;display:flex;align-items:center;justify-content:center">
+      ${done?'<span style="color:#000;font-size:11px;font-weight:900">&#10003;</span>':''}
+    </div>
+    <span style="font-size:18px">${h.emoji}</span>
+    <span style="font-size:14px;font-weight:500;color:${done?'rgba(255,255,255,.3)':'#F0F0F0'};text-decoration:${done?'line-through':'none'}">${h.label}</span>
+  </div>`;
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────
+load();
+render();
+</script>
+</body>
+</html>
