@@ -480,9 +480,9 @@ function bHome(){
   return`<div style="padding:18px 16px 0">
     <div style="margin-bottom:14px">
       <div style="font-weight:800;font-size:23px">Angel</div>
-      <div style="font-size:11px;color:#F59E0B99;margin-top:2px">Final Year EEE &middot; Caritas University &middot; 4.26/5.00</div>
+      <div style="font-size:11px;color:#F59E0B99;margin-top:2px">Final Year EEE &middot; Caritas University &middot; 4.33/5.00</div>
     </div>
-
+<button id="copy-btn" onclick="copyProgress()" style="background:#F59E0B;color:#000;border:none;border-radius:10px;padding:8px 13px;font-weight:700;font-size:11px;font-family:inherit;cursor:pointer;letter-spacing:.3px;flex-shrink:0;margin-top:2px">📋 Copy Summary</button>
     <div class="card" style="display:flex;align-items:center;gap:18px">
       <svg width="108" height="108" style="flex-shrink:0">
         <circle cx="54" cy="54" r="${R}" fill="none" stroke="#ffffff0c" stroke-width="11"/>
@@ -764,6 +764,97 @@ function hRow(h,done,fn){
 // ─── INIT ──────────────────────────────────────────────────────────
 load();
 render();
+  // ─── COPY PROGRESS SUMMARY ─────────────────────────────────────────
+function copyProgress(){
+  const today=todayD();
+  const dd=getDay(today);
+  const fd=getFood(today);
+  const dateStr=today.toLocaleDateString('en-NG',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  const spiritDone=SPIRIT.filter(h=>dd.habits[h.id]);
+  const spiritPend=SPIRIT.filter(h=>!dd.habits[h.id]);
+  const hygDone=HYGIENE.filter(h=>dd.hygiene[h.id]);
+  const hygPend=HYGIENE.filter(h=>!dd.hygiene[h.id]);
+  const totalDone=spiritDone.length+hygDone.length;
+  const totalH=ALL_H.length;
+  const habitPct=totalH?Math.round((totalDone/totalH)*100):0;
+  const wx=WX[today.getDay()];
+  const volley=!!dd.habits['volleyball'];
+  const exDone=wx.exs.filter(ex=>(dd.wxChecks||{})[ex]);
+  const exPend=wx.exs.filter(ex=>!(dd.wxChecks||{})[ex]);
+  const en=fd.entries||[];
+  const tCal=en.reduce((s,e)=>s+e.cal,0);
+  const tPro=en.reduce((s,e)=>s+e.p,0);
+  const tCarb=en.reduce((s,e)=>s+e.c,0);
+  const tFat=en.reduce((s,e)=>s+e.f,0);
+  const schTasks=S.tasks.filter(t=>t.category==='Scholarship');
+  const cncTasks=S.tasks.filter(t=>t.category==='CNC Machine');
+  const genTasks=S.tasks.filter(t=>t.category==='General');
+  const schDone=schTasks.filter(t=>t.done).length;
+  const cncDone=cncTasks.filter(t=>t.done).length;
+  const genDone=genTasks.filter(t=>t.done).length;
+  const wk=weekData();
+  const wkStr=wk.map(w=>{
+    const lbl=w.date.toLocaleDateString('en-NG',{weekday:'short'});
+    const bar=w.pct===0?'░░░░░':w.pct<40?'██░░░':w.pct<70?'███░░':w.pct<100?'████░':'█████';
+    return lbl+' '+bar+' '+w.pct+'%';
+  }).join('  ');
+  const lines=[
+    '╔═══════════════════════════════════════════════════╗',
+    '║            ANGEL\'S PROGRESS SUMMARY              ║',
+    '╚═══════════════════════════════════════════════════╝',
+    '📅 '+dateStr,'',
+    '━━━ 🌟 DAILY HABITS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    'Overall: '+totalDone+'/'+totalH+' ('+habitPct+'%)', '',
+    'Spiritual:',
+    spiritDone.length?'  ✅ '+spiritDone.map(h=>h.label).join(', '):'  (none done)',
+    spiritPend.length?'  ⏳ '+spiritPend.map(h=>h.label).join(', '):'', '',
+    'Hygiene & Self-care:',
+    hygDone.length?'  ✅ '+hygDone.map(h=>h.label).join(', '):'  (none done)',
+    hygPend.length?'  ⏳ '+hygPend.map(h=>h.label).join(', '):'', '',
+    'Sleep: '+(dd.sleep?dd.sleep+'h last night':'Not logged'),
+    'Study/Reading: '+(dd.readMins||0)+' minutes',
+    dd.notes?'Notes: '+dd.notes:'', '',
+    '━━━ 💪 FITNESS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    'Workout: '+wx.name+' ('+wx.sub+')',
+    'Volleyball: '+(volley?'✅ Done':'⏳ Pending'),
+    wx.exs.length?('Exercises ('+exDone.length+'/'+wx.exs.length+'):'+
+      (exDone.length?'\n  ✅ '+exDone.join(', '):'')+
+      (exPend.length?'\n  ⏳ '+exPend.join(', '):'')):'Rest day', '',
+    '━━━ 🍽️ NUTRITION ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    en.length?('Calories: '+Math.round(tCal)+' / '+CAL_GOAL+' kcal'+(tCal>CAL_GOAL?' (⚠️ over by '+Math.round(tCal-CAL_GOAL)+')':(CAL_GOAL-Math.round(tCal))+' remaining')+
+      '\nProtein: '+Math.round(tPro)+'g  Carbs: '+Math.round(tCarb)+'g  Fat: '+Math.round(tFat)+'g'+
+      '\nFoods: '+en.map(e=>e.name+(e.qty!==1?' x'+e.qty:'')+' ('+e.cal+'kcal)').join(', ')):'Nothing logged today', '',
+    '━━━ ✅ TASKS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    '🎓 Scholarship: '+schDone+'/'+schTasks.length+' done',
+    schTasks.filter(t=>t.done).length?'  ✅ '+schTasks.filter(t=>t.done).map(t=>t.title).join('; '):'',
+    schTasks.filter(t=>!t.done).length?'  ⏳ '+schTasks.filter(t=>!t.done).map(t=>t.title).join('; '):'', '',
+    '⚙️  CNC Machine: '+cncDone+'/'+cncTasks.length+' done',
+    cncTasks.filter(t=>t.done).length?'  ✅ '+cncTasks.filter(t=>t.done).map(t=>t.title).join('; '):'',
+    cncTasks.filter(t=>!t.done).length?'  ⏳ '+cncTasks.filter(t=>!t.done).map(t=>t.title).join('; '):'', '',
+    genTasks.length?('📌 General: '+genDone+'/'+genTasks.length+' done'):'',
+    genTasks.filter(t=>t.done).length?'  ✅ '+genTasks.filter(t=>t.done).map(t=>t.title).join('; '):'',
+    genTasks.filter(t=>!t.done).length?'  ⏳ '+genTasks.filter(t=>!t.done).map(t=>t.title).join('; '):'', '',
+    '━━━ 📊 WEEKLY HABIT STREAK ━━━━━━━━━━━━━━━━━━━━━━',
+    wkStr,'',
+    '═══════════════════════════════════════════════════',
+  ].filter(l=>l!==undefined&&l!==null);
+  const text=lines.join('\n');
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>{
+      const btn=document.getElementById('copy-btn');
+      if(btn){btn.textContent='✓ Copied!';btn.style.background='#22C55E';btn.style.color='#000';setTimeout(()=>{btn.textContent='📋 Copy Summary';btn.style.background='#F59E0B';btn.style.color='#000';},2500);}
+    }).catch(()=>fallbackCopy(text));
+  } else { fallbackCopy(text); }
+}
+function fallbackCopy(text){
+  const ta=document.createElement('textarea');
+  ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');}catch(e){}
+  document.body.removeChild(ta);
+  const btn=document.getElementById('copy-btn');
+  if(btn){btn.textContent='✓ Copied!';setTimeout(()=>{btn.textContent='📋 Copy Summary';},2500);}
+      }
 </script>
 </body>
 </html>
