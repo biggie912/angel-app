@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#06080F">
+  <title>Angel's Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;overscroll-behavior:none}
+    body{background:#06080F;color:#EDF0F7;font-family:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
+    #app{max-width:480px;margin:0 auto;min-height:100vh}
+    ::-webkit-scrollbar{width:2px}
+    ::-webkit-scrollbar-thumb{background:#ffffff12;border-radius:1px}
+    input[type=number]::-webkit-inner-spin-button{opacity:.4}
+
+    .content{padding-bottom:86px}
+    .pad{padding:6px 16px}
+    .card{background:#0C0E1B;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:16px;margin-bottom:12px}
+
+    .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(6,8,15,.97);border-top:1px solid rgba(255,255,255,.07);backdrop-filter:blur(20px);display:flex;z-index:300;padding-bottom:env(safe-area-inset-bottom,6px)}
+    .nb{flex:1;padding:11px 2px 5px;border:none;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;-webkit-tap-highlight-color:transparent}
+    .nb .ni{font-size:18px;line-height:1.2}
+    .nb .nl{font-size:8px;font-weight:700;letter-spacing:1px;color:#374151;font-family:'DM Sans',sans-serif;text-transform:uppercase;margin-top:1px}
+    .nb.on .nl{color:#F59E0B}
+    .ndot{width:18px;height:2px;border-radius:1px;background:#F59E0B;margin-top:2px;box-shadow:0 0 8px rgba(245,158,11,.5)}
+
+    .dn{display:flex;align-items:center;gap:8px;padding:14px 4px 10px}
+    .dbt{width:34px;height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);color:#6B7280;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+    .dbt.dim{color:#111320;pointer-events:none}
+
+    .sh{font-size:9px;font-weight:700;color:#374151;letter-spacing:2px;margin-bottom:10px;padding-left:2px;padding-top:4px;font-family:'Syne',sans-serif;text-transform:uppercase}
+
+    .hr{display:flex;align-items:center;gap:14px;padding:12px 10px;border-radius:10px;cursor:pointer;margin-bottom:2px;-webkit-tap-highlight-color:transparent}
+    .hr:active{background:rgba(255,255,255,.03)}
+
+    .sb{padding:9px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.06);cursor:pointer;font-weight:600;font-size:13px;background:rgba(255,255,255,.04);color:#6B7280;font-family:'DM Mono',monospace;-webkit-tap-highlight-color:transparent}
+    .sb.on{background:rgba(15,224,170,.12);color:#0FE0AA;border-color:rgba(15,224,170,.3);box-shadow:0 0 10px rgba(15,224,170,.1)}
+
+    .stb{width:38px;height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.04);color:#EDF0F7;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;flex-shrink:0}
+
+    .pt{height:5px;border-radius:2.5px;background:rgba(255,255,255,.06);overflow:hidden}
+    .pf{height:100%;border-radius:2.5px;background:#0FE0AA;transition:width .4s}
+
+    .inp{width:100%;padding:11px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.04);color:#EDF0F7;font-size:13px;font-family:'DM Sans',sans-serif}
+    .inp:focus{outline:none;border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.03)}
+    select.inp option{background:#0C0E1B}
+    textarea.inp{resize:none;line-height:1.65;color:#6B7280}
+
+    .bgold{background:#F59E0B;color:#000;border:none;border-radius:12px;padding:13px;font-weight:700;font-size:13px;cursor:pointer;width:100%;font-family:'DM Sans',sans-serif;letter-spacing:.3px;-webkit-tap-highlight-color:transparent;box-shadow:0 4px 16px rgba(245,158,11,.2)}
+    .boutl{background:transparent;color:#F59E0B;border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:10px 18px;font-weight:600;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:transparent}
+    .pill{display:inline-flex;align-items:center;padding:7px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.07);background:transparent;color:#6B7280;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:transparent;letter-spacing:.3px}
+    .pill.on{background:#F59E0B;color:#000;border-color:#F59E0B}
+    .catb{background:#0C0E1B;border-radius:14px;padding:14px 8px;text-align:center;cursor:pointer;border:1.5px solid rgba(255,255,255,.06);-webkit-tap-highlight-color:transparent}
+    .catb.on{background:#0D1020;border-color:rgba(245,158,11,.3)}
+    .xcbtn{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.1);font-size:14px;padding:3px 5px;-webkit-tap-highlight-color:transparent}
+
+    .ti{display:flex;align-items:flex-start;gap:10px;padding:13px 14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);border-radius:12px;margin-bottom:6px}
+    .badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;margin-top:5px;letter-spacing:.5px}
+    .divl{height:1px;background:rgba(255,255,255,.05);flex:1}
+    .fe{display:flex;align-items:center;gap:10px;padding:11px 12px}
+
+    button:active{opacity:.72;transform:scale(.95)}
+    [onclick]:active{opacity:.8}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────
+const DEFAULT_FOODS = [
+  {id:'pounded_yam',   cat:'Swallows',   name:'Pounded Yam',              unit:'medium wrap',    cal:330, p:3,  c:78, f:0  },
+  {id:'fufu',          cat:'Swallows',   name:'Fufu',                     unit:'medium wrap',    cal:330, p:1,  c:82, f:0  },
+  {id:'eba',           cat:'Swallows',   name:'Eba (Garri swallow)',       unit:'medium wrap',    cal:340, p:1,  c:84, f:0  },
+  {id:'amala',         cat:'Swallows',   name:'Amala',                    unit:'medium wrap',    cal:295, p:3,  c:70, f:0  },
+  {id:'semovita',      cat:'Swallows',   name:'Semovita',                 unit:'medium wrap',    cal:320, p:6,  c:72, f:1  },
+  {id:'tuwo',          cat:'Swallows',   name:'Tuwo Shinkafa',            unit:'medium wrap',    cal:310, p:4,  c:72, f:0  },
+  {id:'akpu',          cat:'Swallows',   name:'Akpu (Cassava fufu)',       unit:'medium wrap',    cal:325, p:1,  c:80, f:0  },
+  {id:'starch_d',      cat:'Swallows',   name:'Starch (Delta)',           unit:'medium wrap',    cal:300, p:1,  c:74, f:0  },
+  {id:'rice',          cat:'Staples',    name:'Rice (cooked)',             unit:'cup',            cal:206, p:4,  c:45, f:0  },
+  {id:'jollof_rice',   cat:'Staples',    name:'Jollof Rice',              unit:'cup',            cal:280, p:6,  c:52, f:7  },
+  {id:'fried_rice',    cat:'Staples',    name:'Fried Rice',               unit:'cup',            cal:300, p:7,  c:50, f:9  },
+  {id:'ofada_rice',    cat:'Staples',    name:'Ofada Rice',               unit:'cup',            cal:270, p:5,  c:56, f:2  },
+  {id:'coconut_rice',  cat:'Staples',    name:'Coconut Rice',             unit:'cup',            cal:320, p:5,  c:52, f:11 },
+  {id:'rice_beans',    cat:'Staples',    name:'Rice & Beans',             unit:'cup',            cal:295, p:10, c:55, f:3  },
+  {id:'beans',         cat:'Staples',    name:'Beans (cooked)',           unit:'cup',            cal:227, p:15, c:41, f:1  },
+  {id:'ewa_agoyin',    cat:'Staples',    name:'Ewa Agoyin',               unit:'plate',          cal:380, p:15, c:52, f:13 },
+  {id:'yam_boiled',    cat:'Staples',    name:'Yam (boiled)',             unit:'medium slice',   cal:118, p:2,  c:28, f:0  },
+  {id:'yam_fried',     cat:'Staples',    name:'Yam (fried)',              unit:'medium slice',   cal:220, p:2,  c:40, f:7  },
+  {id:'okpa',          cat:'Staples',    name:'Okpa',                     unit:'piece (150g)',   cal:250, p:12, c:35, f:7  },
+  {id:'moimoi',        cat:'Staples',    name:'Moi Moi',                  unit:'wrap',           cal:180, p:10, c:22, f:5  },
+  {id:'akara',         cat:'Staples',    name:'Akara',                    unit:'piece',          cal:120, p:6,  c:14, f:5  },
+  {id:'spaghetti',     cat:'Staples',    name:'Spaghetti (cooked)',       unit:'cup',            cal:220, p:8,  c:43, f:1  },
+  {id:'indomie',       cat:'Staples',    name:'Indomie',                  unit:'pack',           cal:330, p:7,  c:48, f:13 },
+  {id:'garrii',        cat:'Staples',    name:'Garri (dry)',              unit:'cup',            cal:360, p:1,  c:85, f:0  },
+  {id:'cornflakes',    cat:'Staples',    name:'Cornflakes',               unit:'cup',            cal:101, p:2,  c:24, f:0  },
+  {id:'oatmeal',       cat:'Staples',    name:'Oatmeal (cooked)',         unit:'cup',            cal:158, p:6,  c:27, f:3  },
+  {id:'bread',         cat:'Staples',    name:'Agege Bread',              unit:'slice',          cal:130, p:4,  c:25, f:2  },
+  {id:'abacha',        cat:'Staples',    name:'Abacha (African Salad)',   unit:'plate',          cal:310, p:5,  c:55, f:9  },
+  {id:'egusi',         cat:'Soups',      name:'Egusi Soup',               unit:'cup',            cal:335, p:15, c:10, f:28 },
+  {id:'ogbono',        cat:'Soups',      name:'Ogbono Soup',              unit:'cup',            cal:310, p:13, c:6,  f:26 },
+  {id:'ofe_onugbu',    cat:'Soups',      name:'Ofe Onugbu (Bitter leaf)', unit:'cup',            cal:290, p:12, c:8,  f:22 },
+  {id:'edikaikong',    cat:'Soups',      name:'Edikaikong Soup',          unit:'cup',            cal:260, p:14, c:7,  f:20 },
+  {id:'afang',         cat:'Soups',      name:'Afang Soup',               unit:'cup',            cal:280, p:13, c:6,  f:22 },
+  {id:'banga',         cat:'Soups',      name:'Banga Soup',               unit:'cup',            cal:350, p:12, c:8,  f:30 },
+  {id:'oha',           cat:'Soups',      name:'Oha Soup',                 unit:'cup',            cal:255, p:11, c:7,  f:20 },
+  {id:'okra_soup',     cat:'Soups',      name:'Okra Soup',                unit:'cup',            cal:220, p:10, c:12, f:16 },
+  {id:'efo_riro',      cat:'Soups',      name:'Efo Riro',                 unit:'cup',            cal:240, p:12, c:9,  f:18 },
+  {id:'miyan_kuka',    cat:'Soups',      name:'Miyan Kuka',               unit:'cup',            cal:200, p:10, c:8,  f:14 },
+  {id:'miyan_taushe',  cat:'Soups',      name:'Miyan Taushe',             unit:'cup',            cal:230, p:9,  c:14, f:16 },
+  {id:'fisherman',     cat:'Soups',      name:'Fisherman Soup',           unit:'bowl',           cal:295, p:20, c:7,  f:21 },
+  {id:'pepper_soup',   cat:'Soups',      name:'Pepper Soup (goat)',       unit:'bowl',           cal:250, p:26, c:4,  f:14 },
+  {id:'ofe_akwu',      cat:'Soups',      name:'Ofe Akwu (Palm nut)',      unit:'cup',            cal:370, p:11, c:8,  f:33 },
+  {id:'gbegiri',       cat:'Soups',      name:'Gbegiri Soup',             unit:'cup',            cal:220, p:12, c:18, f:10 },
+  {id:'veg_soup',      cat:'Soups',      name:'Vegetable Soup',           unit:'cup',            cal:210, p:11, c:8,  f:15 },
+  {id:'chicken_g',     cat:'Proteins',   name:'Chicken (grilled)',         unit:'medium piece',   cal:210, p:28, c:0,  f:10 },
+  {id:'chicken_f',     cat:'Proteins',   name:'Chicken (fried)',           unit:'medium piece',   cal:290, p:26, c:8,  f:17 },
+  {id:'beef',          cat:'Proteins',   name:'Beef (cooked)',             unit:'100g',           cal:250, p:26, c:0,  f:16 },
+  {id:'goat_meat',     cat:'Proteins',   name:'Goat Meat',                unit:'100g',           cal:230, p:27, c:0,  f:13 },
+  {id:'turkey',        cat:'Proteins',   name:'Turkey (grilled)',          unit:'medium piece',   cal:190, p:29, c:0,  f:7  },
+  {id:'pork',          cat:'Proteins',   name:'Pork (cooked)',             unit:'100g',           cal:270, p:25, c:0,  f:18 },
+  {id:'catfish',       cat:'Proteins',   name:'Catfish (grilled)',         unit:'medium',         cal:180, p:26, c:0,  f:8  },
+  {id:'tilapia',       cat:'Proteins',   name:'Tilapia (grilled)',         unit:'medium',         cal:160, p:26, c:0,  f:5  },
+  {id:'dried_fish',    cat:'Proteins',   name:'Dried Fish (Panla)',        unit:'piece',          cal:140, p:22, c:0,  f:5  },
+  {id:'stockfish',     cat:'Proteins',   name:'Stockfish',                unit:'100g',           cal:130, p:29, c:0,  f:1  },
+  {id:'eggs_boiled',   cat:'Proteins',   name:'Eggs (boiled)',             unit:'egg',            cal:78,  p:6,  c:1,  f:5  },
+  {id:'eggs_fried',    cat:'Proteins',   name:'Eggs (fried)',              unit:'egg',            cal:90,  p:6,  c:1,  f:7  },
+  {id:'eggs_scram',    cat:'Proteins',   name:'Eggs (scrambled, 2)',       unit:'2 eggs',         cal:180, p:12, c:2,  f:13 },
+  {id:'sardines',      cat:'Proteins',   name:'Sardines',                 unit:'can',            cal:191, p:23, c:0,  f:11 },
+  {id:'shrimp',        cat:'Proteins',   name:'Shrimp (cooked)',           unit:'cup',            cal:150, p:29, c:2,  f:2  },
+  {id:'periwinkle',    cat:'Proteins',   name:'Periwinkle',               unit:'cup',            cal:105, p:18, c:3,  f:2  },
+  {id:'snail',         cat:'Proteins',   name:'Peppered Snail',           unit:'plate',          cal:190, p:22, c:6,  f:8  },
+  {id:'ponmo',         cat:'Proteins',   name:'Ponmo (Cow skin)',          unit:'100g',           cal:150, p:20, c:0,  f:7  },
+  {id:'liver',         cat:'Proteins',   name:'Liver (Cow)',              unit:'100g',           cal:175, p:26, c:4,  f:5  },
+  {id:'suya',          cat:'Proteins',   name:'Suya',                     unit:'stick (100g)',   cal:220, p:24, c:4,  f:12 },
+  {id:'kilishi',       cat:'Proteins',   name:'Kilishi',                  unit:'piece (50g)',    cal:175, p:20, c:6,  f:8  },
+  {id:'nkwobi',        cat:'Proteins',   name:'Nkwobi',                   unit:'plate',          cal:420, p:28, c:8,  f:32 },
+  {id:'isi_ewu',       cat:'Proteins',   name:'Isi Ewu',                  unit:'plate',          cal:380, p:26, c:5,  f:29 },
+  {id:'milk',          cat:'Proteins',   name:'Milk',                     unit:'cup',            cal:149, p:8,  c:12, f:8  },
+  {id:'groundnuts',    cat:'Proteins',   name:'Groundnuts',               unit:'\u00bc cup',     cal:207, p:9,  c:6,  f:18 },
+  {id:'palmoil',       cat:'Oils',       name:'Palm Oil',                 unit:'tbsp',           cal:120, p:0,  c:0,  f:14 },
+  {id:'groundnutoil',  cat:'Oils',       name:'Groundnut Oil',            unit:'tbsp',           cal:119, p:0,  c:0,  f:14 },
+  {id:'veg_oil',       cat:'Oils',       name:'Vegetable Oil',            unit:'tbsp',           cal:120, p:0,  c:0,  f:14 },
+  {id:'sugar',         cat:'Oils',       name:'Sugar',                    unit:'tsp',            cal:16,  p:0,  c:4,  f:0  },
+  {id:'crayfish',      cat:'Oils',       name:'Crayfish (dried)',          unit:'tbsp',           cal:35,  p:6,  c:0,  f:1  },
+  {id:'onions',        cat:'Oils',       name:'Onions',                   unit:'medium',         cal:44,  p:1,  c:10, f:0  },
+  {id:'tomatoes',      cat:'Oils',       name:'Tomatoes',                 unit:'medium',         cal:22,  p:1,  c:5,  f:0  },
+  {id:'carrots',       cat:'Oils',       name:'Carrots',                  unit:'medium',         cal:25,  p:1,  c:6,  f:0  },
+  {id:'cabbage',       cat:'Vegetables', name:'Cabbage',                  unit:'cup (shredded)', cal:22,  p:1,  c:5,  f:0  },
+  {id:'ugwu',          cat:'Vegetables', name:'Ugwu (Pumpkin leaf)',       unit:'cup',            cal:25,  p:3,  c:3,  f:0  },
+  {id:'spinach',       cat:'Vegetables', name:'Spinach',                  unit:'cup',            cal:7,   p:1,  c:1,  f:0  },
+  {id:'waterleaf',     cat:'Vegetables', name:'Water Leaf',               unit:'cup',            cal:15,  p:1,  c:2,  f:0  },
+  {id:'bitterleaf',    cat:'Vegetables', name:'Bitter Leaf',              unit:'cup',            cal:20,  p:2,  c:3,  f:0  },
+  {id:'okra_veg',      cat:'Vegetables', name:'Okra',                     unit:'cup (sliced)',   cal:33,  p:2,  c:7,  f:0  },
+  {id:'efo',           cat:'Vegetables', name:'Efo (Lagos Spinach)',       unit:'cup',            cal:18,  p:2,  c:2,  f:0  },
+  {id:'cucumber',      cat:'Vegetables', name:'Cucumber',                 unit:'cup (sliced)',   cal:16,  p:1,  c:4,  f:0  },
+  {id:'green_pepper',  cat:'Vegetables', name:'Green Pepper',             unit:'medium',         cal:24,  p:1,  c:6,  f:0  },
+  {id:'scent_leaf',    cat:'Vegetables', name:'Scent Leaf (Nchanwu)',      unit:'handful',        cal:8,   p:1,  c:1,  f:0  },
+  {id:'broccoli',      cat:'Vegetables', name:'Broccoli',                 unit:'cup',            cal:55,  p:4,  c:11, f:1  },
+  {id:'sweet_corn',    cat:'Vegetables', name:'Sweet Corn',               unit:'cob',            cal:130, p:4,  c:27, f:2  },
+  {id:'lettuce',       cat:'Vegetables', name:'Lettuce',                  unit:'cup',            cal:10,  p:1,  c:2,  f:0  },
+  {id:'sweet_potato',  cat:'Vegetables', name:'Sweet Potato (boiled)',     unit:'medium',         cal:103, p:2,  c:24, f:0  },
+  {id:'garden_egg',    cat:'Vegetables', name:'Garden Egg (Eggplant)',     unit:'medium',         cal:20,  p:1,  c:5,  f:0  },
+  {id:'banana',        cat:'Fruits',     name:'Banana',                   unit:'medium',         cal:105, p:1,  c:27, f:0  },
+  {id:'plantain_r',    cat:'Fruits',     name:'Plantain (fried/ripe)',     unit:'medium',         cal:215, p:1,  c:40, f:7  },
+  {id:'plantain_b',    cat:'Fruits',     name:'Plantain (boiled)',         unit:'medium',         cal:155, p:1,  c:36, f:0  },
+  {id:'boli',          cat:'Fruits',     name:'Boli (roasted plantain)',   unit:'medium',         cal:175, p:1,  c:42, f:1  },
+  {id:'mango',         cat:'Fruits',     name:'Mango',                    unit:'medium',         cal:135, p:1,  c:35, f:1  },
+  {id:'orange',        cat:'Fruits',     name:'Orange',                   unit:'medium',         cal:62,  p:1,  c:15, f:0  },
+  {id:'pawpaw',        cat:'Fruits',     name:'Pawpaw (Papaya)',           unit:'cup (sliced)',   cal:55,  p:1,  c:14, f:0  },
+  {id:'pineapple',     cat:'Fruits',     name:'Pineapple',                unit:'cup (sliced)',   cal:82,  p:1,  c:22, f:0  },
+  {id:'watermelon',    cat:'Fruits',     name:'Watermelon',               unit:'cup',            cal:46,  p:1,  c:11, f:0  },
+  {id:'guava',         cat:'Fruits',     name:'Guava',                    unit:'medium',         cal:68,  p:3,  c:14, f:1  },
+  {id:'avocado',       cat:'Fruits',     name:'Avocado (Pear)',            unit:'half',           cal:160, p:2,  c:9,  f:15 },
+  {id:'apple',         cat:'Fruits',     name:'Apple',                    unit:'medium',         cal:95,  p:0,  c:25, f:0  },
+  {id:'grapes',        cat:'Fruits',     name:'Grapes',                   unit:'cup',            cal:104, p:1,  c:27, f:0  },
+  {id:'tangerine',     cat:'Fruits',     name:'Tangerine',                unit:'medium',         cal:47,  p:1,  c:12, f:0  },
+  {id:'lemon',         cat:'Fruits',     name:'Lemon',                    unit:'medium',         cal:17,  p:1,  c:5,  f:0  },
+  {id:'coconut',       cat:'Fruits',     name:'Coconut (fresh)',           unit:'cup (pieces)',   cal:283, p:3,  c:12, f:27 },
+  {id:'dates',         cat:'Fruits',     name:'Dates (Dabino)',            unit:'3 pieces',       cal:200, p:2,  c:53, f:0  },
+  {id:'soursop',       cat:'Fruits',     name:'Soursop',                  unit:'cup',            cal:148, p:2,  c:38, f:1  },
+  {id:'ube',           cat:'Fruits',     name:'Bush Pear (Ube)',           unit:'medium',         cal:130, p:1,  c:8,  f:11 },
+  {id:'cashew_f',      cat:'Fruits',     name:'Cashew Fruit',             unit:'medium',         cal:73,  p:1,  c:17, f:0  },
+  {id:'breadfruit',    cat:'Fruits',     name:'Breadfruit (Ukwa)',         unit:'cup',            cal:227, p:8,  c:48, f:1  },
+  {id:'strawberry',    cat:'Fruits',     name:'Strawberry',               unit:'cup',            cal:49,  p:1,  c:12, f:0  },
+  {id:'star_apple',    cat:'Fruits',     name:'African Star Apple',        unit:'medium',         cal:67,  p:1,  c:16, f:0  },
+  {id:'chin_chin',     cat:'Snacks',     name:'Chin Chin',                unit:'cup',            cal:450, p:6,  c:62, f:20 },
+  {id:'puff_puff',     cat:'Snacks',     name:'Puff Puff',                unit:'piece',          cal:120, p:2,  c:18, f:5  },
+  {id:'buns',          cat:'Snacks',     name:'Buns',                     unit:'piece',          cal:150, p:3,  c:22, f:6  },
+  {id:'scotch_egg',    cat:'Snacks',     name:'Scotch Egg',               unit:'piece',          cal:230, p:11, c:14, f:14 },
+  {id:'meat_pie',      cat:'Snacks',     name:'Meat Pie',                 unit:'piece',          cal:310, p:10, c:38, f:13 },
+  {id:'fish_roll',     cat:'Snacks',     name:'Fish Roll',                unit:'piece',          cal:270, p:9,  c:34, f:11 },
+  {id:'sausage_roll',  cat:'Snacks',     name:'Sausage Roll',             unit:'piece',          cal:290, p:8,  c:30, f:15 },
+  {id:'shawarma',      cat:'Snacks',     name:'Shawarma',                 unit:'wrap',           cal:420, p:20, c:48, f:16 },
+  {id:'small_chops',   cat:'Snacks',     name:'Small Chops (plate)',       unit:'plate',          cal:480, p:12, c:52, f:24 },
+  {id:'popcorn',       cat:'Snacks',     name:'Popcorn (plain)',           unit:'cup',            cal:55,  p:2,  c:11, f:1  },
+  {id:'roasted_corn',  cat:'Snacks',     name:'Roasted Corn',             unit:'cob',            cal:130, p:4,  c:27, f:2  },
+  {id:'kuli_kuli',     cat:'Snacks',     name:'Kuli-kuli (Groundnut cake)',unit:'piece',          cal:180, p:8,  c:12, f:12 },
+  {id:'biscuit',       cat:'Snacks',     name:'Shortbread Biscuit',       unit:'2 pieces',       cal:140, p:2,  c:18, f:7  },
+  {id:'crackers',      cat:'Snacks',     name:'Crackers',                 unit:'4 pieces',       cal:130, p:2,  c:20, f:5  },
+  {id:'yogurt',        cat:'Snacks',     name:'Yogurt (plain)',            unit:'cup',            cal:150, p:9,  c:17, f:4  },
+  {id:'ice_cream',     cat:'Snacks',     name:'Ice Cream',                unit:'scoop',          cal:140, p:2,  c:17, f:7  },
+  {id:'zobo',          cat:'Drinks',     name:'Zobo Drink',               unit:'cup',            cal:45,  p:0,  c:11, f:0  },
+  {id:'kunu',          cat:'Drinks',     name:'Kunu',                     unit:'cup',            cal:90,  p:2,  c:20, f:1  },
+  {id:'tiger_nut',     cat:'Drinks',     name:'Tiger Nut Drink',          unit:'cup',            cal:140, p:2,  c:28, f:4  },
+  {id:'palm_wine',     cat:'Drinks',     name:'Palm Wine',                unit:'cup',            cal:90,  p:1,  c:18, f:0  },
+  {id:'malt',          cat:'Drinks',     name:'Malt Drink',               unit:'bottle',         cal:180, p:2,  c:42, f:0  },
+  {id:'soymilk',       cat:'Drinks',     name:'Soy Milk',                 unit:'cup',            cal:100, p:7,  c:8,  f:4  },
+  {id:'ogi',           cat:'Drinks',     name:'Ogi / Pap (plain)',         unit:'cup',            cal:120, p:2,  c:28, f:1  },
+  {id:'akamu_milk',    cat:'Drinks',     name:'Pap with Milk',            unit:'bowl',           cal:210, p:6,  c:38, f:4  },
+  {id:'fab',           cat:'Drinks',     name:'Fab (Flavoured Milk)',      unit:'pack',           cal:500, p:8,  c:64, f:22 },
+  {id:'lacasera',      cat:'Drinks',     name:'Lacasera (Apple drink)',    unit:'bottle',         cal:140, p:0,  c:36, f:0  },
+  {id:'bigi_cola',     cat:'Drinks',     name:'Bigi Cola',                unit:'bottle',         cal:130, p:0,  c:33, f:0  },
+  {id:'water',         cat:'Drinks',     name:'Water',                    unit:'cup',            cal:0,   p:0,  c:0,  f:0  },
+  {id:'tea_plain',     cat:'Drinks',     name:'Tea (plain)',               unit:'cup',            cal:2,   p:0,  c:0,  f:0  },
+  {id:'coffee_black',  cat:'Drinks',     name:'Coffee (black)',            unit:'cup',            cal:5,   p:0,  c:1,  f:0  },
+  {id:'lipton_milk',   cat:'Drinks',     name:'Lipton with Milk & Sugar',  unit:'cup',            cal:80,  p:2,  c:14, f:2  },
+];
+const FOODS = DEFAULT_FOODS;
+const CAL_GOAL = 1600;
+
+const WX={
+  0:{name:'Rest Day',             sub:'Active recovery 🏐', emoji:'😴',color:'#4B5568',exs:[]},
+  1:{name:'Gluteus Maximus',      sub:'Lower body — glutes',emoji:'🍑',color:'#F59E0B',
+     exs:['Hip Thrusts','Sumo Squats','Romanian Deadlift','Donkey Kicks','Glute Bridges','Kickbacks','Step-ups']},
+  2:{name:'Jumping Drills + Abs', sub:'Cardio & core',      emoji:'⚡',color:'#8B5CF6',
+     exs:['Jump Squats','High Knees','Box Jumps','Burpees','Plank 60s','Crunches','Russian Twists','Leg Raises']},
+  3:{name:'Jumping Drills + Abs', sub:'Cardio & core',      emoji:'⚡',color:'#8B5CF6',
+     exs:['Jump Squats','High Knees','Box Jumps','Burpees','Plank 60s','Crunches','Russian Twists','Leg Raises']},
+  4:{name:'Gluteus Medius',       sub:'Hip & side glutes',  emoji:'🔥',color:'#22C55E',
+     exs:['Side Hip Abduction','Clamshells','Lateral Band Walks','Single Leg Bridge','Curtsy Lunges','Fire Hydrants','Side Plank Dips']},
+  5:{name:'Jumping Drills + Abs', sub:'Cardio & core',      emoji:'⚡',color:'#8B5CF6',
+     exs:['Jump Squats','High Knees','Box Jumps','Burpees','Plank 60s','Crunches','Russian Twists','Leg Raises']},
+  6:{name:'Gluteus Minimus',      sub:'Hip abductors & outer',emoji:'✨',color:'#EC4899',
+     exs:['Standing Hip Abduction','Side Leg Raises','Sumo Squats','Plie Squats','Cossack Squats','Inner Thigh Squeeze','Fire Hydrants']},
+};
+
+const SPIRIT=[
+  {id:'pray_am', label:'Morning Prayer', emoji:'🌅'},
+  {id:'fasting',  label:'Fasting',        emoji:'✨'},
+  {id:'bible',    label:'Read Bible',     emoji:'📖'},
+  {id:'jogging',  label:'Jogging',        emoji:'🏃‍♀️'},
+  {id:'water',    label:'Drink Water',    emoji:'💧'},
+  {id:'pray_pm',  label:'Night Prayer',   emoji:'🌙'},
+];
+const HYGIENE=[
+  {id:'brush_am',    label:'Brush Teeth (AM)', emoji:'🪥'},
+  {id:'shower',      label:'Shower',            emoji:'🚿'},
+  {id:'skincare_am', label:'Skincare (AM)',     emoji:'🌿'},
+  {id:'loc_care',    label:'Loc Care',          emoji:'🦁'},
+  {id:'brush_pm',    label:'Brush Teeth (PM)', emoji:'🌙'},
+  {id:'skincare_pm', label:'Skincare (PM)',     emoji:'💆‍♀️'},
+];
+const ALL_H=[...SPIRIT,...HYGIENE];
+
+const SCH_T=[
+  'Take IELTS exam',
+  'Request 10 sealed transcripts from Caritas registry',
+  'Send referee request emails (×3)',
+  'Complete DAAD motivation letter',
+  'Write Chevening leadership & networking essays',
+  'Update Europass CV with CNC FYP',
+  'Research TU Dortmund MSc Automation requirements',
+  'Gather all DAAD application documents',
+  'Submit DAAD online portal application',
+  'Write Eiffel Excellence personal statement',
+  'Research MEXT scholarship process',
+  'Prepare NYSC deferment letter',
+  'Research RWTH Aachen MSc Robotics program',
+  'Research Erasmus Mundus JEMARO / IFRoS',
+  'Update scholarship tracker',
+];
+const CNC_T=[
+  'Complete CNC plotter frame assembly',
+  'Test NEMA 17 stepper motors individually',
+  'Configure GRBL firmware on Arduino Uno',
+  'Wire A4988 stepper drivers correctly',
+  'Test CNC Shield V3 connections',
+  'Write Python G-code generation script',
+  'Design test PCB trace in KiCad',
+  'Calibrate X and Y axis movement',
+  'Test pen-up / pen-down servo mechanism',
+  'Run first PCB trace test plot',
+  'Fix mechanical / backlash issues',
+  'Document machine specs and schematics',
+  'Finalize 25-page final year project report',
+  'Prepare project defense presentation',
+  'Film demo video of plotter in action',
+];
+
+// ─── STATE ─────────────────────────────────────────────────────────
+function todayD(){const d=new Date();d.setHours(0,0,0,0);return d;}
+const S={
+  tab:'home', selDate:todayD(),
+  dayDB:{}, foodDB:{}, tasks:[],
+  selFood:'rice', foodQty:1,
+  cstName:'', cstCal:'',
+  newTask:'', newTaskCat:'Scholarship',
+  tCat:'All', tStatus:'All',
+  scanOpen:false, scanImg:null, scanB64:null, scanLoading:false, scanResult:null, scanError:null,
+};
+
+// ─── HELPERS ───────────────────────────────────────────────────────
+function dk(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function labelDate(d){
+  const t=todayD(),yt=new Date(t);yt.setDate(t.getDate()-1);
+  const k=dk(d);
+  if(k===dk(t))return'Today';
+  if(k===dk(yt))return'Yesterday';
+  return d.toLocaleDateString('en-NG',{weekday:'short',month:'short',day:'numeric'});
+}
+function fullDate(d){return d.toLocaleDateString('en-NG',{weekday:'long',month:'long',day:'numeric',year:'numeric'});}
+function emptyDay(){return{habits:{},hygiene:{},sleep:null,readMins:0,notes:'',wxChecks:{}};}
+function getDay(d){return S.dayDB[dk(d)]||emptyDay();}
+function getFood(d){return S.foodDB[dk(d)]||{entries:[]};}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function weekData(){
+  const t=todayD();
+  return Array.from({length:7},(_,i)=>{
+    const d=new Date(t);d.setDate(t.getDate()-6+i);
+    const dd=getDay(d);
+    const done=ALL_H.filter(h=>(dd.habits[h.id]||dd.hygiene[h.id])).length;
+    return{date:d,pct:ALL_H.length?Math.round((done/ALL_H.length)*100):0,lbl:d.toLocaleDateString('en-NG',{weekday:'short'}).charAt(0)};
+  });
+}
+
+// ─── PERSIST ───────────────────────────────────────────────────────
+function save(){
+  try{
+    localStorage.setItem('ang6_day', JSON.stringify(S.dayDB));
+    localStorage.setItem('ang6_food',JSON.stringify(S.foodDB));
+    localStorage.setItem('ang6_task',JSON.stringify(S.tasks));
+  }catch(e){}
+}
+function load(){
+  try{
+    const d=localStorage.getItem('ang6_day');
+    const f=localStorage.getItem('ang6_food');
+    const t=localStorage.getItem('ang6_task');
+    if(d)S.dayDB =JSON.parse(d);
+    if(f)S.foodDB=JSON.parse(f);
+    if(t){S.tasks=JSON.parse(t);}
+    else{
+      S.tasks=[
+        ...SCH_T.map((title,i)=>({id:'s'+i,title,category:'Scholarship',done:false})),
+        ...CNC_T.map((title,i)=>({id:'c'+i,title,category:'CNC Machine', done:false})),
+      ];
+      save();
+    }
+  }catch(e){S.tasks=[];}
+}
+
+// ─── ACTIONS ───────────────────────────────────────────────────────
+function setTab(t){S.tab=t;render();}
+function prevDay(){const d=new Date(S.selDate);d.setDate(d.getDate()-1);S.selDate=d;render();}
+function nextDay(){const d=new Date(S.selDate);d.setDate(d.getDate()+1);if(dk(d)<=dk(todayD())){S.selDate=d;render();}}
+function setF(field,val,date){
+  const key=date?dk(date):dk(S.selDate);
+  if(!S.dayDB[key])S.dayDB[key]=emptyDay();
+  S.dayDB[key][field]=val;
+  save();render();
+}
+function togH(id){
+  const k=dk(S.selDate);if(!S.dayDB[k])S.dayDB[k]=emptyDay();
+  S.dayDB[k].habits[id]=!S.dayDB[k].habits[id];save();render();
+}
+function togHy(id){
+  const k=dk(S.selDate);if(!S.dayDB[k])S.dayDB[k]=emptyDay();
+  S.dayDB[k].hygiene[id]=!S.dayDB[k].hygiene[id];save();render();
+}
+function togWx(ex){
+  const k=dk(S.selDate);if(!S.dayDB[k])S.dayDB[k]=emptyDay();
+  if(!S.dayDB[k].wxChecks)S.dayDB[k].wxChecks={};
+  S.dayDB[k].wxChecks[ex]=!S.dayDB[k].wxChecks[ex];save();render();
+}
+function setSleep(h){const dd=getDay(S.selDate);setF('sleep',dd.sleep===h?null:h);}
+function adjRead(d){const dd=getDay(S.selDate);setF('readMins',Math.max(0,(dd.readMins||0)+d));}
+function setSelFood(v){S.selFood=v;render();}
+function adjQty(d){S.foodQty=Math.max(0.5,parseFloat((S.foodQty+d).toFixed(1)));render();}
+function addFood(){
+  const f=FOODS.find(x=>x.id===S.selFood)||FOODS[0];
+  const k=dk(S.selDate);if(!S.foodDB[k])S.foodDB[k]={entries:[]};
+  S.foodDB[k].entries.push({id:Date.now(),name:f.name,unit:f.unit,qty:S.foodQty,
+    cal:Math.round(f.cal*S.foodQty),p:Math.round(f.p*S.foodQty),
+    c:Math.round(f.c*S.foodQty),f:Math.round(f.f*S.foodQty)});
+  S.foodQty=1;save();render();
+}
+function addCst(){
+  if(!S.cstName.trim()||!S.cstCal)return;
+  const k=dk(S.selDate);if(!S.foodDB[k])S.foodDB[k]={entries:[]};
+  S.foodDB[k].entries.push({id:Date.now(),name:S.cstName.trim(),unit:'custom',qty:1,cal:parseFloat(S.cstCal)||0,p:0,c:0,f:0});
+  S.cstName='';S.cstCal='';save();render();
+}
+function delFood(id){
+  const k=dk(S.selDate);if(S.foodDB[k])S.foodDB[k].entries=S.foodDB[k].entries.filter(e=>e.id!==id);
+  save();render();
+}
+function togTask(id){S.tasks=S.tasks.map(t=>t.id===id?{...t,done:!t.done}:t);save();render();}
+function delTask(id){S.tasks=S.tasks.filter(t=>t.id!==id);save();render();}
+function addTask(){
+  const title=S.newTask.trim();if(!title)return;
+  S.tasks.push({id:'u'+Date.now(),title,category:S.newTaskCat,done:false});
+  S.newTask='';save();render();
+}
+function setTCat(c){S.tCat=c;render();}
+function setTSt(s){S.tStatus=s;render();}
+function setNTC(c){S.newTaskCat=c;render();}
+function updNotes(v,tod){
+  const key=tod?dk(todayD()):dk(S.selDate);
+  if(!S.dayDB[key])S.dayDB[key]=emptyDay();
+  S.dayDB[key].notes=v;save();
+}
+function updCN(v){S.cstName=v;}
+function updCC(v){S.cstCal=v;}
+function updNT(v){S.newTask=v;}
+
+// ─── SCAN ACTIONS ──────────────────────────────────────────────────
+function openScan(){S.scanOpen=true;S.scanImg=null;S.scanB64=null;S.scanResult=null;S.scanError=null;S.scanLoading=false;render();}
+function closeScan(){S.scanOpen=false;stopScanCam();render();}
+function onScanFile(input){
+  const file=input.files[0];if(!file)return;
+  stopScanCam();
+  const r=new FileReader();
+  r.onload=e=>{S.scanImg=e.target.result;S.scanB64=e.target.result.split(',')[1];S.scanResult=null;S.scanError=null;render();};
+  r.readAsDataURL(file);
+}
+let _scanStream=null;
+function startScanCam(){
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(st=>{
+    _scanStream=st;
+    render();
+    setTimeout(()=>{const v=document.getElementById('scan-video');if(v){v.srcObject=st;}},50);
+  }).catch(()=>{S.scanError='Camera denied. Use file upload instead.';render();});
+}
+function stopScanCam(){if(_scanStream){_scanStream.getTracks().forEach(t=>t.stop());_scanStream=null;}}
+function snapScanCam(){
+  const v=document.getElementById('scan-video');if(!v)return;
+  const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;
+  c.getContext('2d').drawImage(v,0,0);
+  const d=c.toDataURL('image/jpeg',0.85);
+  S.scanImg=d;S.scanB64=d.split(',')[1];S.scanResult=null;S.scanError=null;
+  stopScanCam();render();
+}
+async function runScan(){
+  if(!S.scanB64)return;
+  S.scanLoading=true;S.scanError=null;S.scanResult=null;render();
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:[
+        {type:'image',source:{type:'base64',media_type:'image/jpeg',data:S.scanB64}},
+        {type:'text',text:`You are a nutrition expert. Analyse this food image and return ONLY a valid JSON object (no markdown, no backticks, no extra text) with this exact structure:
+{"total_calories":<number>,"items":[{"name":"<food name>","portion":"<estimated portion>","calories":<number>,"protein":<number>,"carbs":<number>,"fat":<number>}],"notes":"<1-2 sentence tip or confidence note>"}
+Be realistic. If image is not food, set total_calories to 0 and explain in notes.`}
+      ]}]})});
+    const data=await res.json();
+    const raw=data.content.map(b=>b.text||'').join('');
+    const clean=raw.replace(/```json|```/g,'').trim();
+    S.scanResult=JSON.parse(clean);
+  }catch(e){S.scanError='Could not analyse image. Try a clearer photo.';}
+  S.scanLoading=false;render();
+}
+function addScanItems(){
+  if(!S.scanResult||!S.scanResult.items)return;
+  const k=dk(S.selDate);if(!S.foodDB[k])S.foodDB[k]={entries:[]};
+  S.scanResult.items.forEach(item=>{
+    S.foodDB[k].entries.push({
+      id:Date.now()+Math.random(),
+      name:item.name+' 📷',
+      unit:item.portion,qty:1,
+      cal:item.calories||0,p:item.protein||0,c:item.carbs||0,f:item.fat||0
+    });
+  });
+  save();
+  S.scanOpen=false;S.scanImg=null;S.scanB64=null;S.scanResult=null;S.scanError=null;
+  stopScanCam();render();
+}
+
+// ─── RENDER ────────────────────────────────────────────────────────
+function render(){
+  const fa=document.activeElement,fid=fa?fa.id:null,ss=fa?fa.selectionStart:null,se=fa?fa.selectionEnd:null;
+  const sc=(document.querySelector('.content')||{}).scrollTop||0;
+  document.getElementById('app').innerHTML=buildApp();
+  if(fid){const el=document.getElementById(fid);if(el){el.focus();try{el.setSelectionRange(ss,se);}catch(e){}}}
+  const cc=document.querySelector('.content');if(cc)cc.scrollTop=sc;
+}
+
+function buildApp(){
+  return`<div class="content">${
+    S.tab==='home'?bHome():S.tab==='day'?bDay():S.tab==='fitness'?bFit():S.tab==='food'?bFood():bTasks()
+  }</div>${bNav()}`;
+}
+
+// ─── NAV ───────────────────────────────────────────────────────────
+function bNav(){
+  return`<nav class="nav">${
+    [['home','🏠','Home'],['day','📅','Day'],['fitness','💪','Fit'],['food','🍽️','Food'],['tasks','✅','Tasks']]
+    .map(([id,ic,lb])=>`<button class="nb${S.tab===id?' on':''}" onclick="setTab('${id}')">
+      <span class="ni">${ic}</span>
+      <span class="nl">${lb}</span>
+      ${S.tab===id?'<div class="ndot"></div>':'<div style="height:4px"></div>'}
+    </button>`).join('')
+  }</nav>`;
+}
+
+// ─── DATE NAV ──────────────────────────────────────────────────────
+function bDN(){
+  const isT=dk(S.selDate)===dk(todayD());
+  return`<div class="dn">
+    <button class="dbt" onclick="prevDay()">&#8249;</button>
+    <div style="flex:1;text-align:center">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:#EDF0F7">${labelDate(S.selDate)}</div>
+      <div style="font-size:10px;color:#374151;margin-top:2px">${fullDate(S.selDate)}</div>
+    </div>
+    <button class="dbt${isT?' dim':''}" onclick="nextDay()">&#8250;</button>
+  </div>`;
+}
+
+// ─── HOME ──────────────────────────────────────────────────────────
+function bHome(){
+  const t=todayD(),dd=getDay(t);
+  const done=ALL_H.filter(h=>dd.habits[h.id]||dd.hygiene[h.id]).length;
+  const pct=ALL_H.length?Math.round((done/ALL_H.length)*100):0;
+  const R=52,circ=(2*Math.PI*R),off=(circ*(1-pct/100));
+  const wx=WX[t.getDay()],wk=weekData();
+  const sp=S.tasks.filter(x=>x.category==='Scholarship'&&!x.done).length;
+  const cp=S.tasks.filter(x=>x.category==='CNC Machine'&&!x.done).length;
+  const notes=dd.notes||'';
+  const vLabel=pct>=80?'Peak':pct>=60?'Solid':pct>=40?'Fair':'Low';
+  const vColor=pct>=80?'#0FE0AA':pct>=60?'#F59E0B':pct>=40?'#F97316':'#EF4444';
+
+  return`<div style="padding:0 0 8px">
+    <div style="padding:24px 18px 10px;display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;color:#374151;text-transform:uppercase">Vitality · Live</div>
+        <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1.1;margin-top:4px;color:#EDF0F7">Angel</div>
+        <div style="font-size:10px;color:#374151;margin-top:3px">${t.toLocaleDateString('en-NG',{weekday:'long',month:'short',day:'numeric'})}</div>
+      </div>
+      <button id="copy-btn" onclick="copyProgress()" style="background:transparent;color:#F59E0B;border:1px solid rgba(245,158,11,.2);border-radius:9px;padding:8px 14px;font-weight:600;font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:4px">📋 Summary</button>
+    </div>
+
+    <div style="display:flex;justify-content:center;padding:4px 0 10px">
+      <div style="display:inline-flex;flex-direction:column;align-items:center;gap:8px">
+        <svg width="172" height="172">
+          <defs>
+            <filter id="vglow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <circle cx="86" cy="86" r="${R}" fill="none" stroke="rgba(255,255,255,.04)" stroke-width="14"/>
+          <circle cx="86" cy="86" r="${R}" fill="none" stroke="${vColor}" stroke-width="14"
+            stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"
+            stroke-linecap="round" transform="rotate(-90 86 86)" filter="url(#vglow)"/>
+          <text x="86" y="79" text-anchor="middle" fill="#EDF0F7" font-size="40" font-weight="500" font-family="DM Mono, monospace">${pct}</text>
+          <text x="86" y="97" text-anchor="middle" fill="${vColor}" font-size="11" font-family="DM Sans, sans-serif" font-weight="600" letter-spacing="1">% VITALITY</text>
+          <text x="86" y="113" text-anchor="middle" fill="#374151" font-size="10" font-family="DM Sans, sans-serif">${done}/${ALL_H.length} habits done</text>
+        </svg>
+        <div style="background:${vColor}18;border:1px solid ${vColor}30;border-radius:20px;padding:4px 16px;font-family:'Syne',sans-serif;font-size:9px;font-weight:700;letter-spacing:2.5px;color:${vColor};text-transform:uppercase">${vLabel}</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:4px 16px 14px">
+      <div style="background:#0C0E1B;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:14px 10px;text-align:center">
+        <div style="font-family:'DM Mono',monospace;font-size:26px;font-weight:500;line-height:1;color:${dd.sleep?(dd.sleep>=8?'#0FE0AA':dd.sleep>=6?'#F59E0B':'#EF4444'):'#2D3748'}">${dd.sleep||'—'}</div>
+        <div style="font-size:8px;color:#374151;letter-spacing:1.5px;margin-top:5px;font-weight:700;font-family:'Syne',sans-serif">SLEEP</div>
+        <div style="font-size:9px;color:#2D3748;margin-top:3px">${dd.sleep?'hrs':'not set'}</div>
+      </div>
+      <div style="background:#0C0E1B;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:14px 10px;text-align:center">
+        <div style="font-size:26px;line-height:1">${wx.emoji}</div>
+        <div style="font-size:8px;color:#374151;letter-spacing:1.5px;margin-top:5px;font-weight:700;font-family:'Syne',sans-serif">STRAIN</div>
+        <div style="font-size:9px;color:#2D3748;margin-top:3px;padding:0 2px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${wx.name.split(' ')[0]}</div>
+      </div>
+      <div style="background:#0C0E1B;border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:14px 10px;text-align:center">
+        <div style="font-family:'DM Mono',monospace;font-size:26px;font-weight:500;line-height:1;color:${sp===0?'#0FE0AA':'#A78BFA'}">${sp}</div>
+        <div style="font-size:8px;color:#374151;letter-spacing:1.5px;margin-top:5px;font-weight:700;font-family:'Syne',sans-serif">SCH</div>
+        <div style="font-size:9px;color:#2D3748;margin-top:3px">pending</div>
+      </div>
+    </div>
+
+    <div style="background:#0C0E1B;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:14px 16px;margin:0 16px 12px">
+      <div class="sh">Week Streak</div>
+      <div style="display:flex;gap:5px;align-items:flex-end;height:52px">
+        ${wk.map(w=>{
+          const iT=dk(w.date)===dk(t);
+          const h=Math.max(4,w.pct*.48);
+          const col=iT?'#F59E0B':w.pct>=70?'#0FE0AA':w.pct>=40?'#F59E0B':'rgba(255,255,255,.07)';
+          return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="font-family:'DM Mono',monospace;font-size:8px;color:${iT?'#F59E0B':'#374151'}">${w.pct?w.pct:''}</div>
+            <div style="width:100%;height:${h}px;border-radius:3px;background:${col};${iT?'box-shadow:0 0 8px rgba(245,158,11,.35)':''}"></div>
+            <div style="font-size:9px;color:${iT?'#F59E0B':'#374151'};font-weight:${iT?700:400}">${w.lbl}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div style="background:#0C0E1B;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:14px 16px;margin:0 16px 12px">
+      <div class="sh">Today's Habits · ${done}/${ALL_H.length}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+        ${SPIRIT.map(h=>{const d2=!!dd.habits[h.id];return`
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;background:${d2?'rgba(15,224,170,.07)':'rgba(255,255,255,.02)'};border:1px solid ${d2?'rgba(15,224,170,.15)':'rgba(255,255,255,.04)'}">
+            <div style="width:5px;height:5px;border-radius:50%;flex-shrink:0;background:${d2?'#0FE0AA':'rgba(255,255,255,.1)'}"></div>
+            <span style="font-size:11px;color:${d2?'#CBD5E0':'#374151'}">${h.label}</span>
+          </div>`;}).join('')}
+      </div>
+    </div>
+
+    ${(sp>0||cp>0)?`
+    <div style="background:rgba(167,139,250,.05);border:1px solid rgba(167,139,250,.13);border-radius:16px;padding:14px 16px;margin:0 16px 12px">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:#A78BFA;margin-bottom:5px">🎓 ${sp} scholarship task${sp!==1?'s':''} pending</div>
+      <div style="font-size:11px;color:#4B5568;line-height:1.5">Stay on track for your 2027 MSc application</div>
+      ${cp>0?`<div style="font-size:11px;color:#4B5568;margin-top:3px">⚙️ ${cp} CNC tasks remaining</div>`:''}
+    </div>`:''}
+
+    <div style="background:#0C0E1B;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:14px 16px;margin:0 16px 16px">
+      <div class="sh">Today's Note</div>
+      <textarea id="home-notes" class="inp" rows="3" oninput="updNotes(this.value,true)" placeholder="Write something for today...">${esc(notes)}</textarea>
+    </div>
+  </div>`;
+}
+
+// ─── DAY ───────────────────────────────────────────────────────────
+function bDay(){
+  const dd=getDay(S.selDate);
+  const hc=HYGIENE.filter(h=>dd.hygiene[h.id]).length;
+  const sc=SPIRIT.filter(h=>dd.habits[h.id]).length;
+  return`<div class="pad">${bDN()}
+    <div class="sh">Spiritual Habits · ${sc}/${SPIRIT.length}</div>
+    <div class="card" style="padding:6px 10px;margin-bottom:12px">
+      ${SPIRIT.map(h=>hRow(h,!!dd.habits[h.id],`togH('${h.id}')`)).join('')}
+    </div>
+    <div class="sh">Hygiene & Self-care · ${hc}/${HYGIENE.length}</div>
+    <div class="card" style="padding:6px 10px;margin-bottom:12px">
+      ${HYGIENE.map(h=>hRow(h,!!dd.hygiene[h.id],`togHy('${h.id}')`)).join('')}
+    </div>
+    <div class="sh">Sleep Last Night</div>
+    <div class="card" style="margin-bottom:12px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${[4,5,6,7,8,9,10].map(h=>`<button class="sb${dd.sleep===h?' on':''}" onclick="setSleep(${h})">${h}h</button>`).join('')}
+      </div>
+      ${dd.sleep?`<div style="margin-top:12px;font-size:12px;color:${dd.sleep>=8?'#0FE0AA':dd.sleep>=6?'#F59E0B':'#EF4444'};font-weight:500">${dd.sleep>=8?'⭐ Great sleep!':dd.sleep>=6?'😐 Decent — aim for 8h':'😴 Try to sleep more tonight'}</div>`:''}
+    </div>
+    <div class="sh">Reading / Study Time</div>
+    <div class="card" style="display:flex;align-items:center;gap:16px;margin-bottom:12px">
+      <button class="stb" onclick="adjRead(-15)">−</button>
+      <div style="flex:1;text-align:center">
+        <div style="font-family:'DM Mono',monospace;font-size:42px;font-weight:500;color:#EDF0F7;line-height:1">${dd.readMins||0}</div>
+        <div style="font-size:9px;color:#374151;letter-spacing:1.5px;margin-top:4px;font-family:'Syne',sans-serif;font-weight:700">MINUTES</div>
+      </div>
+      <button class="stb" onclick="adjRead(15)">+</button>
+    </div>
+    <div class="sh">Notes</div>
+    <div class="card" style="padding:14px 16px;margin-bottom:16px">
+      <textarea id="day-notes" class="inp" rows="4" oninput="updNotes(this.value,false)" placeholder="Write a short note for this day...">${esc(dd.notes||'')}</textarea>
+    </div>
+  </div>`;
+}
+
+// ─── FITNESS ───────────────────────────────────────────────────────
+function bFit(){
+  const dd=getDay(S.selDate),wx=WX[S.selDate.getDay()],wk=weekData();
+  const exDone=wx.exs.filter(ex=>!!(dd.wxChecks||{})[ex]).length;
+  return`<div class="pad">${bDN()}
+    <div style="background:#0C0E1B;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:18px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:58px;height:58px;border-radius:16px;background:${wx.color}18;border:1px solid ${wx.color}28;display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0">${wx.emoji}</div>
+        <div style="flex:1">
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:19px;color:#EDF0F7;line-height:1.2">${wx.name}</div>
+          <div style="font-size:12px;color:#4B5568;margin-top:4px">${wx.sub}</div>
+        </div>
+      </div>
+      ${wx.exs.length?`
+      <div style="margin-top:14px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:10px;color:#374151;font-weight:600">${exDone}/${wx.exs.length} exercises</span>
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:${wx.color}">${Math.round((exDone/wx.exs.length)*100)}%</span>
+        </div>
+        <div class="pt"><div class="pf" style="width:${Math.round((exDone/wx.exs.length)*100)}%;background:${wx.color}"></div></div>
+      </div>`:''}
+    </div>
+
+    <div style="background:#0C0E1B;border:1px solid rgba(255,255,255,.06);border-radius:16px;display:flex;align-items:center;gap:14px;padding:16px;margin-bottom:14px">
+      <div style="width:46px;height:46px;border-radius:13px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🏐</div>
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:14px;color:#EDF0F7">Volleyball</div>
+        <div style="font-size:11px;color:#4B5568;margin-top:2px">Daily · 4:00 PM – 6:00 PM</div>
+      </div>
+      <div onclick="togH('volleyball')" style="width:28px;height:28px;border-radius:8px;border:2px solid ${dd.habits.volleyball?'#0FE0AA':'rgba(255,255,255,.1)'};background:${dd.habits.volleyball?'rgba(15,224,170,.15)':'transparent'};cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        ${dd.habits.volleyball?'<span style="color:#0FE0AA;font-size:13px;font-weight:900">✓</span>':''}
+      </div>
+    </div>
+
+    ${wx.exs.length?`
+    <div class="sh">Today's Exercises</div>
+    <div style="background:#0C0E1B;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:8px;margin-bottom:14px">
+      ${wx.exs.map((ex,i)=>{const done=!!(dd.wxChecks||{})[ex];return`
+        <div onclick="togWx('${esc(ex)}')" style="display:flex;align-items:center;gap:12px;padding:13px 12px;border-radius:10px;cursor:pointer;background:${done?wx.color+'0A':'transparent'};border:1px solid ${done?wx.color+'18':'transparent'};margin-bottom:${i<wx.exs.length-1?'3px':'0'}">
+          <div style="width:22px;height:22px;border-radius:6px;border:2px solid ${done?wx.color:'rgba(255,255,255,.1)'};background:${done?wx.color+'15':'transparent'};flex-shrink:0;display:flex;align-items:center;justify-content:center">
+            ${done?`<span style="color:${wx.color};font-size:11px;font-weight:900">✓</span>`:''}
+          </div>
+          <span style="font-size:14px;color:${done?'#4B5568':'#EDF0F7'};text-decoration:${done?'line-through':'none'};flex:1">${esc(ex)}</span>
+          ${done?`<span style="font-size:10px;color:${wx.color};font-weight:600;font-family:'DM Mono',monospace">Done</span>`:''}
+        </div>`;}).join('')}
+    </div>`:
+    `<div style="text-align:center;padding:40px 20px">
+      <div style="font-size:52px;margin-bottom:14px">😴</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:6px;color:#6B7280">Rest & Recovery</div>
+      <div style="font-size:13px;color:#374151">Muscles rebuilding. Hydrate, sleep well, play volleyball!</div>
+    </div>`}
+
+    <div class="sh">Last 7 Days</div>
+    <div class="card" style="padding:8px">
+      ${wk.slice().reverse().map((w,i)=>{const w2=WX[w.date.getDay()];const iT=dk(w.date)===dk(todayD());return`
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:${i<6?'1px solid rgba(255,255,255,.04)':'none'}">
+          <div style="width:7px;height:7px;border-radius:50%;background:${w.pct>=70?'#0FE0AA':w.pct>=40?'#F59E0B':w.pct>0?'#EF4444':'rgba(255,255,255,.07)'};flex-shrink:0"></div>
+          <span style="width:65px;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;color:${iT?'#F59E0B':'#6B7280'}">${w.date.getDate()} ${w.date.toLocaleDateString('en-NG',{weekday:'short'})}</span>
+          <span style="flex:1;font-size:12px;color:#374151">${w2.name}</span>
+          ${w.pct>0?`<span style="font-family:'DM Mono',monospace;font-size:11px;color:${w.pct>=70?'#0FE0AA':w.pct>=40?'#F59E0B':'#EF4444'};font-weight:500">${w.pct}%</span>`:''}
+        </div>`;}).join('')}
+    </div>
+  </div>`;
+}
+
+// ─── SCAN CARD ─────────────────────────────────────────────────────
+function bScanCard(){
+  if(!S.scanOpen){
+    return`<div class="card" style="padding:14px 16px;margin-bottom:12px;border-color:rgba(245,158,11,.15);background:rgba(245,158,11,.03)">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:#EDF0F7;margin-bottom:2px">📸 Snap & Log</div>
+          <div style="font-size:11px;color:#4B5568">Take a photo — AI counts the calories</div>
+        </div>
+        <button onclick="openScan()" style="background:#F59E0B;color:#000;border:none;border-radius:10px;padding:9px 16px;font-weight:700;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;flex-shrink:0">Open</button>
+      </div>
+    </div>`;
+  }
+
+  const camActive=!!_scanStream;
+  let body='';
+
+  if(!S.scanImg&&!camActive){
+    body=`
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <label style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:22px 8px;border:1.5px dashed rgba(255,255,255,.1);border-radius:12px;cursor:pointer;background:rgba(255,255,255,.02)">
+          <span style="font-size:22px">🖼️</span>
+          <span style="font-size:11px;color:#6B7280;font-weight:600">Upload Photo</span>
+          <input type="file" accept="image/*" style="display:none" onchange="onScanFile(this)">
+        </label>
+        <button onclick="startScanCam()" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:22px 8px;border:1.5px dashed rgba(255,255,255,.1);border-radius:12px;cursor:pointer;background:rgba(255,255,255,.02);color:#EDF0F7;font-family:'DM Sans',sans-serif">
+          <span style="font-size:22px">📷</span>
+          <span style="font-size:11px;color:#6B7280;font-weight:600">Use Camera</span>
+        </button>
+      </div>`;
+  }
+
+  if(camActive){
+    body=`
+      <div style="position:relative;margin-bottom:10px">
+        <video id="scan-video" autoplay playsinline style="width:100%;border-radius:10px;background:#000;display:block;max-height:240px;object-fit:cover"></video>
+      </div>
+      <button onclick="snapScanCam()" class="bgold" style="margin-bottom:8px">📸 Capture</button>`;
+  }
+
+  if(S.scanImg&&!camActive){
+    body+=`<div style="position:relative;margin-bottom:10px">
+        <img src="${S.scanImg}" style="width:100%;border-radius:10px;max-height:200px;object-fit:cover;display:block">
+        <button onclick="S.scanImg=null;S.scanB64=null;S.scanResult=null;S.scanError=null;render()" style="position:absolute;top:7px;right:7px;background:rgba(0,0,0,.6);border:none;border-radius:50%;width:26px;height:26px;color:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+      </div>`;
+    if(!S.scanLoading&&!S.scanResult){
+      body+=`<button onclick="runScan()" class="bgold" style="margin-bottom:8px">🔍 Analyse Calories</button>`;
+    }
+  }
+
+  if(S.scanLoading){
+    body+=`<div style="display:flex;align-items:center;justify-content:center;gap:10px;padding:18px;color:#6B7280;font-size:13px">
+      <div style="width:16px;height:16px;border:2.5px solid rgba(245,158,11,.2);border-top-color:#F59E0B;border-radius:50%;animation:spin .7s linear infinite"></div>
+      Analysing your meal…
+    </div>`;
+  }
+
+  if(S.scanError){
+    body+=`<div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:10px 12px;font-size:12px;color:#EF4444;margin-bottom:8px">${S.scanError}</div>`;
+  }
+
+  if(S.scanResult){
+    const items=S.scanResult.items||[];
+    const total=S.scanResult.total_calories||0;
+    body+=`
+      <div style="background:rgba(15,224,170,.05);border:1px solid rgba(15,224,170,.15);border-radius:10px;padding:12px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;color:#EDF0F7">AI Detected</span>
+          <span style="font-family:'DM Mono',monospace;font-size:18px;font-weight:500;color:#0FE0AA">${total} kcal</span>
+        </div>
+        ${items.map(it=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#EDF0F7">${esc(it.name)}</div>
+              <div style="font-size:10px;color:#4B5568">${esc(it.portion)}</div>
+            </div>
+            <span style="font-family:'DM Mono',monospace;font-size:12px;color:#0FE0AA">${it.calories} kcal</span>
+          </div>`).join('')}
+        ${S.scanResult.notes?`<div style="font-size:11px;color:#4B5568;margin-top:8px;line-height:1.5">${esc(S.scanResult.notes)}</div>`:''}
+      </div>
+      <button onclick="addScanItems()" class="bgold">✅ Add All to Log</button>`;
+  }
+
+  return`<div class="card" style="padding:14px 16px;margin-bottom:12px;border-color:rgba(245,158,11,.2)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:#EDF0F7">📸 Snap & Log</div>
+      <button onclick="closeScan()" style="background:none;border:none;color:#4B5568;cursor:pointer;font-size:18px;padding:2px 4px">✕</button>
+    </div>
+    ${body}
+  </div>`;
+}
+
+// ─── FOOD ──────────────────────────────────────────────────────────
+function bFood(){
+  const fl=getFood(S.selDate),en=fl.entries||[];
+  const tC=en.reduce((s,e)=>s+e.cal,0),tP=en.reduce((s,e)=>s+e.p,0),tCb=en.reduce((s,e)=>s+e.c,0),tF=en.reduce((s,e)=>s+e.f,0);
+  const pct=Math.min((tC/CAL_GOAL)*100,100),over=tC>CAL_GOAL;
+  const fd=FOODS.find(f=>f.id===S.selFood)||FOODS[0];
+  const pCal=Math.round(fd.cal*S.foodQty),pPro=Math.round(fd.p*S.foodQty);
+  const calColor=over?'#EF4444':tC/CAL_GOAL>0.85?'#F59E0B':'#0FE0AA';
+
+  return`<div class="pad">${bDN()}
+    <div style="background:#0C0E1B;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:18px 16px;margin-bottom:12px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;margin-bottom:18px">
+        <div style="text-align:center;padding:12px 8px;border-right:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05)">
+          <div style="font-family:'DM Mono',monospace;font-size:34px;font-weight:500;color:${calColor};line-height:1">${Math.round(tC)}</div>
+          <div style="font-size:8px;font-weight:700;color:#374151;letter-spacing:1.5px;margin-top:6px;font-family:'Syne',sans-serif">CALORIES</div>
+          <div style="font-size:9px;color:#2D3748;margin-top:2px">/ ${CAL_GOAL} goal</div>
+        </div>
+        <div style="text-align:center;padding:12px 8px;border-bottom:1px solid rgba(255,255,255,.05)">
+          <div style="font-family:'DM Mono',monospace;font-size:34px;font-weight:500;color:#0FE0AA;line-height:1">${Math.round(tP)}<span style="font-size:16px">g</span></div>
+          <div style="font-size:8px;font-weight:700;color:#374151;letter-spacing:1.5px;margin-top:6px;font-family:'Syne',sans-serif">PROTEIN</div>
+        </div>
+        <div style="text-align:center;padding:12px 8px;border-right:1px solid rgba(255,255,255,.05)">
+          <div style="font-family:'DM Mono',monospace;font-size:34px;font-weight:500;color:#60A5FA;line-height:1">${Math.round(tCb)}<span style="font-size:16px">g</span></div>
+          <div style="font-size:8px;font-weight:700;color:#374151;letter-spacing:1.5px;margin-top:6px;font-family:'Syne',sans-serif">CARBS</div>
+        </div>
+        <div style="text-align:center;padding:12px 8px">
+          <div style="font-family:'DM Mono',monospace;font-size:34px;font-weight:500;color:#C084FC;line-height:1">${Math.round(tF)}<span style="font-size:16px">g</span></div>
+          <div style="font-size:8px;font-weight:700;color:#374151;letter-spacing:1.5px;margin-top:6px;font-family:'Syne',sans-serif">FAT</div>
+        </div>
+      </div>
+      <div class="pt" style="margin-bottom:8px"><div class="pf" style="width:${pct}%;background:${calColor}"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:#374151">
+        <span style="font-family:'DM Mono',monospace">${Math.round(tC)} / ${CAL_GOAL} kcal</span>
+        <span style="color:${over?'#EF4444':'#374151'};font-weight:${over?600:400}">${over?'⚠️ +'+Math.round(tC-CAL_GOAL)+' over':CAL_GOAL-Math.round(tC)+' remaining'}</span>
+      </div>
+    </div>
+
+    <div class="card" style="padding:16px;margin-bottom:12px">
+      <div class="sh">Log Food</div>
+      <select id="food-sel" class="inp" onchange="setSelFood(this.value)" style="margin-bottom:14px">
+        ${FOODS.map(f=>`<option value="${f.id}"${f.id===S.selFood?' selected':''}>${esc(f.name)} (${f.cal} kcal / ${f.unit})</option>`).join('')}
+      </select>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+        <span style="font-size:12px;color:#4B5568;font-weight:600;width:24px">Qty</span>
+        <button class="stb" onclick="adjQty(-0.5)">−</button>
+        <span style="font-family:'DM Mono',monospace;font-size:26px;font-weight:500;min-width:32px;text-align:center;color:#EDF0F7">${S.foodQty}</span>
+        <button class="stb" onclick="adjQty(0.5)">+</button>
+        <span style="font-size:12px;color:#4B5568">${esc(fd.unit)}</span>
+      </div>
+      <div style="font-size:12px;color:#4B5568;margin-bottom:14px;font-family:'DM Mono',monospace">≈ ${pCal} kcal · ${pPro}g protein</div>
+      <button class="bgold" onclick="addFood()">+ Add to Log</button>
+    </div>
+
+    ${bScanCard()}
+
+    <div class="card" style="padding:16px;margin-bottom:12px">
+      <div class="sh">Add Other Food</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <input id="cst-n" class="inp" style="flex:2" placeholder="Food name" value="${esc(S.cstName)}" oninput="updCN(this.value)">
+        <input id="cst-c" type="number" class="inp" style="flex:1;text-align:center" placeholder="kcal" value="${esc(S.cstCal)}" oninput="updCC(this.value)">
+      </div>
+      <button class="boutl" onclick="addCst()">+ Add Custom</button>
+    </div>
+
+    <div class="sh">Food Log</div>
+    ${en.length===0?`<div style="text-align:center;padding:28px 20px;color:#374151;font-size:13px">Nothing logged yet 🥗</div>`:
+    `<div class="card" style="padding:8px;margin-bottom:16px">
+      ${en.map((e,i)=>`
+        <div class="fe" style="border-bottom:${i<en.length-1?'1px solid rgba(255,255,255,.04)':'none'}">
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:600;color:#EDF0F7">${esc(e.name)}${e.qty!==1?` ×${e.qty}`:''}</div>
+            <div style="font-size:11px;color:#4B5568;margin-top:2px;font-family:'DM Mono',monospace">${e.cal} kcal · ${e.p}g P</div>
+          </div>
+          <button class="xcbtn" onclick="delFood(${e.id})">✕</button>
+        </div>`).join('')}
+    </div>`}
+  </div>`;
+}
+
+// ─── TASKS ─────────────────────────────────────────────────────────
+function bTasks(){
+  const filt=S.tasks.filter(t=>{
+    const cok=S.tCat==='All'||t.category===S.tCat;
+    const sok=S.tStatus==='All'||(S.tStatus==='Pending'?!t.done:t.done);
+    return cok&&sok;
+  });
+  const cm=[
+    {cat:'Scholarship',key:'SCH',em:'🎓',bg:'rgba(167,139,250,.07)',txt:'#A78BFA',br:'rgba(167,139,250,.15)'},
+    {cat:'CNC Machine', key:'CNC',em:'⚙️',bg:'rgba(52,211,153,.07)',txt:'#34D399',br:'rgba(52,211,153,.15)'},
+    {cat:'General',     key:'GEN',em:'📌',bg:'rgba(251,191,36,.07)',txt:'#FBBF24',br:'rgba(251,191,36,.15)'},
+  ];
+
+  return`<div style="padding:12px 16px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
+      ${cm.map(({cat,key,em,txt})=>{
+        const p=S.tasks.filter(t=>t.category===cat&&!t.done).length;
+        const tot=S.tasks.filter(t=>t.category===cat).length;
+        const dn=tot-p;
+        const act=S.tCat===cat;
+        return`<div class="catb${act?' on':''}" onclick="setTCat('${cat}')">
+          <div style="font-size:20px;margin-bottom:5px">${em}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:${act?txt:'#EDF0F7'};line-height:1">${p}</div>
+          <div style="font-size:8px;color:#374151;letter-spacing:1px;margin-top:4px;font-family:'Syne',sans-serif;font-weight:700">${key}</div>
+          <div style="font-size:9px;color:#2D3748;margin-top:3px">${dn}/${tot} done</div>
+        </div>`;}).join('')}
+    </div>
+
+    <div class="card" style="padding:14px;margin-bottom:12px">
+      <input id="task-inp" class="inp" placeholder="New task..." value="${esc(S.newTask)}" oninput="updNT(this.value)" onkeydown="if(event.key==='Enter')addTask()">
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:10px">
+        ${['Scholarship','CNC Machine','General'].map(cat=>`
+          <button onclick="setNTC('${cat}')" style="padding:6px 12px;border-radius:20px;border:none;cursor:pointer;font-weight:600;font-size:11px;font-family:'DM Sans',sans-serif;background:${S.newTaskCat===cat?'#F59E0B':'rgba(255,255,255,.05)'};color:${S.newTaskCat===cat?'#000':'#6B7280'}">
+            ${cat==='CNC Machine'?'⚙️ CNC':cat==='Scholarship'?'🎓 Sch':'📌 Gen'}
+          </button>`).join('')}
+        <button onclick="addTask()" style="margin-left:auto;padding:7px 18px;border-radius:20px;border:none;background:#F59E0B;color:#000;font-weight:700;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer">+ Add</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:6px;margin-bottom:14px">
+      ${['All','Pending','Done'].map(s=>`<button class="pill${S.tStatus===s?' on':''}" onclick="setTSt('${s}')">${s}</button>`).join('')}
+    </div>
+
+    ${cm.map(({cat,em,bg,txt,br})=>{
+      const ct=filt.filter(t=>t.category===cat);if(!ct.length)return'';
+      const tot=S.tasks.filter(t=>t.category===cat).length;
+      const dn=S.tasks.filter(t=>t.category===cat&&t.done).length;
+      return`<div style="margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <span style="font-size:9px;font-weight:700;color:#374151;letter-spacing:1.5px;font-family:'Syne',sans-serif;text-transform:uppercase">${em} ${cat}</span>
+          <div class="divl"></div>
+          <span style="font-family:'DM Mono',monospace;font-size:10px;color:#374151">${dn}/${tot}</span>
+        </div>
+        ${ct.map(task=>`
+          <div class="ti">
+            <div onclick="togTask('${task.id}')" style="width:20px;height:20px;border-radius:6px;border:2px solid ${task.done?txt:'rgba(255,255,255,.1)'};background:${task.done?txt+'15':'transparent'};flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px">
+              ${task.done?`<span style="color:${txt};font-size:9px;font-weight:900">✓</span>`:''}
+            </div>
+            <div style="flex:1">
+              <div style="font-size:13px;line-height:1.5;color:${task.done?'rgba(255,255,255,.18)':'#EDF0F7'};text-decoration:${task.done?'line-through':'none'}">${esc(task.title)}</div>
+              <span class="badge" style="background:${bg};color:${txt};border:1px solid ${br}">${cat==='CNC Machine'?'CNC':cat==='Scholarship'?'SCH':'GEN'}</span>
+            </div>
+            <button class="xcbtn" onclick="delTask('${task.id}')">✕</button>
+          </div>`).join('')}
+      </div>`;}).join('')}
+  </div>`;
+}
+
+// ─── HABIT ROW ─────────────────────────────────────────────────────
+function hRow(h,done,fn){
+  return`<div class="hr" onclick="${fn}">
+    <div style="width:22px;height:22px;border-radius:7px;border:2px solid ${done?'#0FE0AA':'rgba(255,255,255,.1)'};background:${done?'rgba(15,224,170,.12)':'transparent'};flex-shrink:0;display:flex;align-items:center;justify-content:center">
+      ${done?'<span style="color:#0FE0AA;font-size:11px;font-weight:900">✓</span>':''}
+    </div>
+    <span style="font-size:18px">${h.emoji}</span>
+    <span style="font-size:14px;font-weight:500;color:${done?'rgba(255,255,255,.25)':'#EDF0F7'};text-decoration:${done?'line-through':'none'}">${h.label}</span>
+  </div>`;
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────
+load();
+render();
+
+// ─── COPY PROGRESS SUMMARY ─────────────────────────────────────────
+function copyProgress(){
+  const today=todayD();
+  const dd=getDay(today);
+  const fd=getFood(today);
+  const dateStr=today.toLocaleDateString('en-NG',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  const spiritDone=SPIRIT.filter(h=>dd.habits[h.id]);
+  const spiritPend=SPIRIT.filter(h=>!dd.habits[h.id]);
+  const hygDone=HYGIENE.filter(h=>dd.hygiene[h.id]);
+  const hygPend=HYGIENE.filter(h=>!dd.hygiene[h.id]);
+  const totalDone=spiritDone.length+hygDone.length;
+  const totalH=ALL_H.length;
+  const habitPct=totalH?Math.round((totalDone/totalH)*100):0;
+  const wx=WX[today.getDay()];
+  const volley=!!dd.habits['volleyball'];
+  const exDone=wx.exs.filter(ex=>(dd.wxChecks||{})[ex]);
+  const exPend=wx.exs.filter(ex=>!(dd.wxChecks||{})[ex]);
+  const en=fd.entries||[];
+  const tCal=en.reduce((s,e)=>s+e.cal,0);
+  const tPro=en.reduce((s,e)=>s+e.p,0);
+  const tCarb=en.reduce((s,e)=>s+e.c,0);
+  const tFat=en.reduce((s,e)=>s+e.f,0);
+  const schTasks=S.tasks.filter(t=>t.category==='Scholarship');
+  const cncTasks=S.tasks.filter(t=>t.category==='CNC Machine');
+  const genTasks=S.tasks.filter(t=>t.category==='General');
+  const schDone=schTasks.filter(t=>t.done).length;
+  const cncDone=cncTasks.filter(t=>t.done).length;
+  const genDone=genTasks.filter(t=>t.done).length;
+  const wk=weekData();
+  const wkStr=wk.map(w=>{
+    const lbl=w.date.toLocaleDateString('en-NG',{weekday:'short'});
+    const bar=w.pct===0?'░░░░░':w.pct<40?'██░░░':w.pct<70?'███░░':w.pct<100?'████░':'█████';
+    return lbl+' '+bar+' '+w.pct+'%';
+  }).join('  ');
+  const lines=[
+    '╔═══════════════════════════════════════════════════╗',
+    '║            ANGEL\'S PROGRESS SUMMARY              ║',
+    '╚═══════════════════════════════════════════════════╝',
+    '📅 '+dateStr,'',
+    '━━━ 🌟 DAILY HABITS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    'Overall: '+totalDone+'/'+totalH+' ('+habitPct+'%)', '',
+    'Spiritual:',
+    spiritDone.length?'  ✅ '+spiritDone.map(h=>h.label).join(', '):'  (none done)',
+    spiritPend.length?'  ⏳ '+spiritPend.map(h=>h.label).join(', '):'', '',
+    'Hygiene & Self-care:',
+    hygDone.length?'  ✅ '+hygDone.map(h=>h.label).join(', '):'  (none done)',
+    hygPend.length?'  ⏳ '+hygPend.map(h=>h.label).join(', '):'', '',
+    'Sleep: '+(dd.sleep?dd.sleep+'h last night':'Not logged'),
+    'Study/Reading: '+(dd.readMins||0)+' minutes',
+    dd.notes?'Notes: '+dd.notes:'', '',
+    '━━━ 💪 FITNESS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    'Workout: '+wx.name+' ('+wx.sub+')',
+    'Volleyball: '+(volley?'✅ Done':'⏳ Pending'),
+    wx.exs.length?('Exercises ('+exDone.length+'/'+wx.exs.length+'):'+
+      (exDone.length?'\n  ✅ '+exDone.join(', '):'')+
+      (exPend.length?'\n  ⏳ '+exPend.join(', '):'')):'Rest day', '',
+    '━━━ 🍽️ NUTRITION ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    en.length?('Calories: '+Math.round(tCal)+' / '+CAL_GOAL+' kcal'+(tCal>CAL_GOAL?' (⚠️ over by '+Math.round(tCal-CAL_GOAL)+')':(CAL_GOAL-Math.round(tCal))+' remaining')+
+      '\nProtein: '+Math.round(tPro)+'g  Carbs: '+Math.round(tCarb)+'g  Fat: '+Math.round(tFat)+'g'+
+      '\nFoods: '+en.map(e=>e.name+(e.qty!==1?' x'+e.qty:'')+' ('+e.cal+'kcal)').join(', ')):'Nothing logged today', '',
+    '━━━ ✅ TASKS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    '🎓 Scholarship: '+schDone+'/'+schTasks.length+' done',
+    schTasks.filter(t=>t.done).length?'  ✅ '+schTasks.filter(t=>t.done).map(t=>t.title).join('; '):'',
+    schTasks.filter(t=>!t.done).length?'  ⏳ '+schTasks.filter(t=>!t.done).map(t=>t.title).join('; '):'', '',
+    '⚙️  CNC Machine: '+cncDone+'/'+cncTasks.length+' done',
+    cncTasks.filter(t=>t.done).length?'  ✅ '+cncTasks.filter(t=>t.done).map(t=>t.title).join('; '):'',
+    cncTasks.filter(t=>!t.done).length?'  ⏳ '+cncTasks.filter(t=>!t.done).map(t=>t.title).join('; '):'', '',
+    genTasks.length?('📌 General: '+genDone+'/'+genTasks.length+' done'):'',
+    genTasks.filter(t=>t.done).length?'  ✅ '+genTasks.filter(t=>t.done).map(t=>t.title).join('; '):'',
+    genTasks.filter(t=>!t.done).length?'  ⏳ '+genTasks.filter(t=>!t.done).map(t=>t.title).join('; '):'', '',
+    '━━━ 📊 WEEKLY HABIT STREAK ━━━━━━━━━━━━━━━━━━━━━━',
+    wkStr,'',
+    '═══════════════════════════════════════════════════',
+  ].filter(l=>l!==undefined&&l!==null);
+  const text=lines.join('\n');
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>{
+      const btn=document.getElementById('copy-btn');
+      if(btn){btn.textContent='✓ Copied!';btn.style.color='#0FE0AA';btn.style.borderColor='rgba(15,224,170,.3)';setTimeout(()=>{btn.textContent='📋 Summary';btn.style.color='#F59E0B';btn.style.borderColor='rgba(245,158,11,.2)';},2500);}
+    }).catch(()=>fallbackCopy(text));
+  } else { fallbackCopy(text); }
+}
+function fallbackCopy(text){
+  const ta=document.createElement('textarea');
+  ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');}catch(e){}
+  document.body.removeChild(ta);
+  const btn=document.getElementById('copy-btn');
+  if(btn){btn.textContent='✓ Copied!';setTimeout(()=>{btn.textContent='📋 Summary';},2500);}
+}
+</script>
+</body>
+</html>
